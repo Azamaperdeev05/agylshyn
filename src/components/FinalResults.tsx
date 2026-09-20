@@ -51,19 +51,19 @@ export function FinalResults({
     <div className="max-w-[760px] mx-auto space-y-8 py-4 animate-in fade-in duration-200">
       {/* Header Banner */}
       <div className="text-center space-y-2">
-        <p className="text-[13px] font-semibold text-[#86868b] uppercase tracking-[-0.01em]">
+        <p className="text-[12px] sm:text-[13px] font-semibold text-[#86868b] uppercase tracking-wider">
           Жаттығу аяқталды
         </p>
-        <h1 className="text-4xl sm:text-5xl font-semibold text-[#1d1d1f] dark:text-white tracking-[-0.025em]">
+        <h1 className="text-3xl sm:text-5xl font-semibold text-[#1d1d1f] dark:text-white tracking-[-0.025em]">
           Нәтижелер.
         </h1>
-        <p className="text-[17px] text-[#86868b] max-w-md mx-auto leading-[1.47]">
+        <p className="text-[14px] sm:text-[17px] text-[#86868b] max-w-md mx-auto leading-[1.47] px-2">
           Диктант бойынша толық есеп пен қателерді талдау көрсеткіші.
         </p>
       </div>
 
       {/* Main Score Card (Apple Store Utility Card with soft elevation) */}
-      <div className="rounded-[18px] bg-white dark:bg-[#1d1d1f] p-8 border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] apple-product-shadow flex flex-col sm:flex-row items-center justify-around gap-8 text-center sm:text-left">
+      <div className="rounded-[18px] bg-white dark:bg-[#1d1d1f] p-5 sm:p-8 border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] apple-product-shadow flex flex-col sm:flex-row items-center justify-around gap-6 sm:gap-8 text-center sm:text-left">
         {/* Big Circular Accuracy Ring */}
         <div className="flex flex-col items-center">
           <div className="relative w-36 h-36 rounded-full border-4 border-[#f5f5f7] dark:border-[#2c2c2e] flex items-center justify-center">
@@ -119,39 +119,39 @@ export function FinalResults({
       </div>
 
       {/* Numerical Stats 4-Column Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="rounded-[14px] bg-white dark:bg-[#1d1d1f] p-5 border border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.08)] text-center">
-          <span className="text-3xl font-semibold text-[#1d1d1f] dark:text-white tracking-[-0.02em]">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
+        <div className="rounded-[14px] bg-white dark:bg-[#1d1d1f] p-3.5 sm:p-5 border border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.08)] text-center">
+          <span className="text-2xl sm:text-3xl font-semibold text-[#1d1d1f] dark:text-white tracking-[-0.02em]">
             {stats.totalSentences}
           </span>
-          <span className="block text-[12px] text-[#86868b] font-normal mt-1">
+          <span className="block text-[11px] sm:text-[12px] text-[#86868b] font-normal mt-1">
             Сөйлем саны
           </span>
         </div>
 
-        <div className="rounded-[14px] bg-white dark:bg-[#1d1d1f] p-5 border border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.08)] text-center">
-          <span className="text-3xl font-semibold text-[#34c759] tracking-[-0.02em]">
+        <div className="rounded-[14px] bg-white dark:bg-[#1d1d1f] p-3.5 sm:p-5 border border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.08)] text-center">
+          <span className="text-2xl sm:text-3xl font-semibold text-[#34c759] tracking-[-0.02em]">
             {stats.correctWords}
           </span>
-          <span className="block text-[12px] text-[#86868b] font-normal mt-1">
+          <span className="block text-[11px] sm:text-[12px] text-[#86868b] font-normal mt-1">
             Дұрыс сөздер
           </span>
         </div>
 
-        <div className="rounded-[14px] bg-white dark:bg-[#1d1d1f] p-5 border border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.08)] text-center">
-          <span className="text-3xl font-semibold text-[#ff3b30] tracking-[-0.02em]">
+        <div className="rounded-[14px] bg-white dark:bg-[#1d1d1f] p-3.5 sm:p-5 border border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.08)] text-center">
+          <span className="text-2xl sm:text-3xl font-semibold text-[#ff3b30] tracking-[-0.02em]">
             {stats.incorrectWords}
           </span>
-          <span className="block text-[12px] text-[#86868b] font-normal mt-1">
+          <span className="block text-[11px] sm:text-[12px] text-[#86868b] font-normal mt-1">
             Қате сөздер
           </span>
         </div>
 
-        <div className="rounded-[14px] bg-white dark:bg-[#1d1d1f] p-5 border border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.08)] text-center">
-          <span className="text-3xl font-semibold text-[#ff9500] tracking-[-0.02em]">
+        <div className="rounded-[14px] bg-white dark:bg-[#1d1d1f] p-3.5 sm:p-5 border border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.08)] text-center">
+          <span className="text-2xl sm:text-3xl font-semibold text-[#ff9500] tracking-[-0.02em]">
             {stats.missingWords}
           </span>
-          <span className="block text-[12px] text-[#86868b] font-normal mt-1">
+          <span className="block text-[11px] sm:text-[12px] text-[#86868b] font-normal mt-1">
             Түсіп қалған
           </span>
         </div>
@@ -159,11 +159,11 @@ export function FinalResults({
 
       {/* Most Difficult Words */}
       {stats.difficultWords.length > 0 && (
-        <div className="rounded-[18px] bg-white dark:bg-[#1d1d1f] p-6 sm:p-7 border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] space-y-3">
-          <span className="text-[14px] font-semibold text-[#1d1d1f] dark:text-white tracking-[-0.01em]">
+        <div className="rounded-[18px] bg-white dark:bg-[#1d1d1f] p-5 sm:p-7 border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] space-y-3">
+          <span className="text-[13px] sm:text-[14px] font-semibold text-[#1d1d1f] dark:text-white tracking-[-0.01em]">
             Ең көп қате кеткен сөздер:
           </span>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 sm:gap-2.5">
             {stats.difficultWords.map((item, idx) => (
               <div
                 key={idx}
@@ -188,13 +188,13 @@ export function FinalResults({
 
       {/* Targeted Mistake Practice Callout Card */}
       {mistakeSentencesCount > 0 ? (
-        <div className="p-6 rounded-[18px] bg-white dark:bg-[#1d1d1f] border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] flex flex-col sm:flex-row items-center justify-between gap-5">
+        <div className="p-5 sm:p-6 rounded-[18px] bg-white dark:bg-[#1d1d1f] border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-5">
           <div className="space-y-1 text-center sm:text-left">
-            <h4 className="text-[17px] font-semibold text-[#1d1d1f] dark:text-white tracking-[-0.015em] flex items-center gap-2 justify-center sm:justify-start">
+            <h4 className="text-[16px] sm:text-[17px] font-semibold text-[#1d1d1f] dark:text-white tracking-[-0.015em] flex items-center gap-2 justify-center sm:justify-start">
               <Sparkles className="w-4 h-4 text-[#0066cc] dark:text-[#2997ff]" />
               <span>Қате кеткен сөйлемдермен жұмыс</span>
             </h4>
-            <p className="text-[14px] text-[#86868b] leading-[1.47]">
+            <p className="text-[13px] sm:text-[14px] text-[#86868b] leading-[1.47]">
               Сізде <strong>{mistakeSentencesCount}</strong> сөйлемде қате болды. Тек осы сөйлемдерді қайталап тыңдап, 100%-ға жеткізіңіз.
             </p>
           </div>
@@ -202,7 +202,7 @@ export function FinalResults({
           <button
             type="button"
             onClick={onPracticeMistakes}
-            className="apple-btn-primary w-full sm:w-auto shrink-0 text-[13px] !py-2.5 !px-5"
+            className="apple-btn-primary w-full sm:w-auto shrink-0 text-[13px] !py-2.5 !px-5 justify-center"
           >
             <span>Қателерді пысықтау ({mistakeSentencesCount})</span>
             <ArrowRight className="w-3.5 h-3.5 ml-1" />
@@ -216,11 +216,11 @@ export function FinalResults({
       )}
 
       {/* Action Footer */}
-      <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-3">
+      <div className="flex flex-col sm:flex-row items-center justify-center gap-2.5 sm:gap-3 pt-2 sm:pt-3">
         <button
           type="button"
           onClick={onRestartSameText}
-          className="apple-btn-secondary w-full sm:w-auto text-[14px] !py-2.5 !px-6"
+          className="apple-btn-secondary w-full sm:w-auto text-[14px] !py-2.5 !px-6 justify-center"
         >
           <RefreshCw className="w-3.5 h-3.5" />
           <span>Осы мәтінді қайта бастау</span>
@@ -229,7 +229,7 @@ export function FinalResults({
         <button
           type="button"
           onClick={onNewDictation}
-          className="apple-btn-primary w-full sm:w-auto text-[14px] !py-2.5 !px-7 font-normal"
+          className="apple-btn-primary w-full sm:w-auto text-[14px] !py-2.5 !px-7 font-normal justify-center"
         >
           <PlusCircle className="w-3.5 h-3.5" />
           <span>Жаңа диктант мәтіні</span>

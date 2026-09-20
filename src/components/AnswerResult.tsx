@@ -26,9 +26,9 @@ export function AnswerResult({
   const isPerfect = result.accuracy === 100;
 
   return (
-    <div className="rounded-[18px] bg-white dark:bg-[#1d1d1f] p-6 sm:p-8 border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] space-y-6 animate-in fade-in duration-200">
+    <div className="rounded-[18px] bg-white dark:bg-[#1d1d1f] p-4 sm:p-8 border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] space-y-5 sm:space-y-6 animate-in fade-in duration-200">
       {/* Accuracy Header & Legend */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.06)]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 pb-3 sm:pb-4 border-b border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.06)]">
         <div className="flex items-center gap-4">
           <div
             className={`w-12 h-12 rounded-full flex items-center justify-center font-semibold text-[17px] ${
@@ -223,11 +223,11 @@ export function AnswerResult({
       </div>
 
       {/* Action Buttons */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.06)]">
+      <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-2.5 sm:gap-3 pt-3 sm:pt-4 border-t border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.06)]">
         <button
           type="button"
           onClick={onTryAgain}
-          className="apple-btn-secondary w-full sm:w-auto text-[13px] !py-2.5 !px-5"
+          className="apple-btn-secondary w-full sm:w-auto text-[13px] !py-2.5 !px-5 justify-center"
         >
           <RotateCcw className="w-3.5 h-3.5" />
           <span>Қайта жазып көру</span>
@@ -236,7 +236,7 @@ export function AnswerResult({
         <button
           type="button"
           onClick={onNextSentence}
-          className="apple-btn-primary w-full sm:w-auto text-[14px] !py-2.5 !px-7 font-normal"
+          className="apple-btn-primary w-full sm:w-auto text-[14px] !py-3 sm:!py-2.5 !px-7 font-normal justify-center shadow-xs"
         >
           <span>{isLastSentence ? "Нәтижені көру" : "Келесі сөйлем"}</span>
           <ArrowRight className="w-4 h-4 ml-1" />

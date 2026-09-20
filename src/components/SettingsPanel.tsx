@@ -135,7 +135,7 @@ export function SettingsPanel({
       </div>
 
       {/* 1. API Status Card */}
-      <div className="rounded-[18px] bg-white dark:bg-[#1d1d1f] p-6 sm:p-7 border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] space-y-4">
+      <div className="rounded-[18px] bg-white dark:bg-[#1d1d1f] p-4 sm:p-7 border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-[#f5f5f7] dark:bg-[#2c2c2e] text-[#0066cc] dark:text-[#2997ff] flex items-center justify-center">
@@ -184,7 +184,7 @@ export function SettingsPanel({
       </div>
 
       {/* 2. Voice Selection */}
-      <div className="rounded-[18px] bg-white dark:bg-[#1d1d1f] p-6 sm:p-7 border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] space-y-4">
+      <div className="rounded-[18px] bg-white dark:bg-[#1d1d1f] p-4 sm:p-7 border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <Volume2 className="w-5 h-5 text-[#0066cc] dark:text-[#2997ff]" />
@@ -283,7 +283,7 @@ export function SettingsPanel({
       </div>
 
       {/* 3. AI Model Selector */}
-      <div className="rounded-[18px] bg-white dark:bg-[#1d1d1f] p-6 sm:p-7 border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] space-y-4">
+      <div className="rounded-[18px] bg-white dark:bg-[#1d1d1f] p-4 sm:p-7 border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] space-y-4">
         <div className="flex items-center gap-2">
           <Zap className="w-5 h-5 text-[#0066cc] dark:text-[#2997ff]" />
           <div>
@@ -327,7 +327,7 @@ export function SettingsPanel({
       </div>
 
       {/* 4. Difficulty Presets */}
-      <div className="rounded-[18px] bg-white dark:bg-[#1d1d1f] p-6 sm:p-7 border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] space-y-4">
+      <div className="rounded-[18px] bg-white dark:bg-[#1d1d1f] p-4 sm:p-7 border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] space-y-4">
         <div className="flex items-center gap-2">
           <Sliders className="w-5 h-5 text-[#0066cc] dark:text-[#2997ff]" />
           <div>
@@ -398,7 +398,7 @@ export function SettingsPanel({
       </div>
 
       {/* 5. Answer Comparison Rules */}
-      <div className="rounded-[18px] bg-white dark:bg-[#1d1d1f] p-6 sm:p-7 border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] space-y-4">
+      <div className="rounded-[18px] bg-white dark:bg-[#1d1d1f] p-4 sm:p-7 border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] space-y-4">
         <h3 className="font-semibold text-[17px] text-[#1d1d1f] dark:text-white tracking-[-0.015em]">
           Жауапты тексеру ережелері
         </h3>

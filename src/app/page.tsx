@@ -323,7 +323,7 @@ export default function Home() {
       />
 
       {/* Main Content Area */}
-      <main className="flex-1 max-w-[1024px] w-full mx-auto px-4 sm:px-6 py-8 sm:py-12">
+      <main className="flex-1 max-w-[1024px] w-full mx-auto px-3.5 sm:px-6 py-4 sm:py-10 pb-28 sm:pb-12">
         {activeTab === "practice" && (
           <div>
             {dictationState === "setup" && (
@@ -367,7 +367,10 @@ export default function Home() {
                       updateSettings({ pauseDuration })
                     }
                     onToggleAutoNext={() =>
-                      updateSettings({ autoNext: !settings.autoNext })
+                      updateSettings({
+                        autoNext: !settings.autoNext,
+                        _userSetAutoNext: true,
+                      } as any)
                     }
                     onCancelCountdown={clearCountdown}
                     voiceName={settings.voiceName}
@@ -431,7 +434,7 @@ export default function Home() {
       </main>
 
       {/* Apple Editorial Footer */}
-      <footer className="bg-[#f5f5f7] dark:bg-[#000000] border-t border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] py-12 text-[12px] text-[#86868b]">
+      <footer className="bg-[#f5f5f7] dark:bg-[#000000] border-t border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] py-8 pb-28 sm:py-12 sm:pb-12 text-[12px] text-[#86868b]">
         <div className="max-w-[1024px] mx-auto px-4 sm:px-6 space-y-4">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pb-4 border-b border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.06)]">
             <p className="font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">

@@ -19,7 +19,7 @@ const DEFAULT_SETTINGS: UserSettings = {
   modelId: "eleven_multilingual_v2",
   speed: 1.0,
   pauseDuration: 3,
-  autoNext: true,
+  autoNext: false,
   maxReplays: "unlimited",
   ignoreCapitalization: true,
   ignorePunctuation: true,
@@ -42,9 +42,13 @@ export function useSettings() {
         if (!parsed.theme || parsed.theme === "system" || parsed.theme === "dark") {
           parsed.theme = "light";
         }
+        // Auto-next is OFF by default unless user explicitly set it
+        if (!parsed._userSetAutoNext) {
+          parsed.autoNext = false;
+        }
         setSettings((prev) => ({ ...prev, ...parsed }));
       } else {
-        setSettings((prev) => ({ ...prev, theme: "light" }));
+        setSettings((prev) => ({ ...prev, theme: "light", autoNext: false }));
       }
     } catch {
       // Ignore parse errors and keep defaults
@@ -138,7 +142,8 @@ export function useSettings() {
     setSpeed: (speed: PlaybackSpeed) => updateSettings({ speed, difficultyPreset: "custom" }),
     setPauseDuration: (pauseDuration: PauseDuration) =>
       updateSettings({ pauseDuration, difficultyPreset: "custom" }),
-    setAutoNext: (autoNext: boolean) => updateSettings({ autoNext }),
+    setAutoNext: (autoNext: boolean) =>
+      updateSettings({ autoNext, _userSetAutoNext: true } as any),
     setMaxReplays: (maxReplays: ReplayLimit) =>
       updateSettings({ maxReplays, difficultyPreset: "custom" }),
     setIgnoreCapitalization: (val: boolean) =>

@@ -102,20 +102,13 @@ export function AnswerInput({
   }, [answer, showHint, isPlaying, onTogglePlay, onReplay, canNextSentence, onNextSentence]);
 
   return (
-    <div className="rounded-[18px] bg-white dark:bg-[#1d1d1f] p-6 sm:p-8 border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] space-y-4">
-      <div className="flex items-center justify-between">
-        <label
-          htmlFor="user-transcription"
-          className="text-[14px] font-semibold text-[#1d1d1f] dark:text-white tracking-[-0.01em]"
-        >
-          Естіген сөйлемді теріңіз
-        </label>
-
+    <div className="rounded-[18px] bg-white dark:bg-[#1d1d1f] p-4 sm:p-8 border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] space-y-4">
+      <div className="flex items-center justify-end">
         {/* Show Hint Button (Apple Ghost Pill) */}
         <button
           type="button"
           onClick={handleToggleHint}
-          className={`apple-btn-secondary text-[12px] !py-1 !px-3 ${
+          className={`apple-btn-secondary text-[11px] sm:text-[12px] !py-1 !px-2.5 sm:!px-3 ${
             showHint ? "!bg-[rgba(0,102,204,0.08)]" : ""
           }`}
           title="Бірінші әріптер бойынша көмек"
@@ -127,12 +120,12 @@ export function AnswerInput({
 
       {/* Hint Banner */}
       {showHint && hintText && (
-        <div className="p-3.5 rounded-[12px] bg-[#f5f5f7] dark:bg-[#000000] border border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.08)] text-[13px] font-mono tracking-wider animate-in fade-in duration-150">
+        <div className="p-3 sm:p-3.5 rounded-[12px] bg-[#f5f5f7] dark:bg-[#000000] border border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.08)] text-[12px] sm:text-[13px] font-mono tracking-wider animate-in fade-in duration-150">
           <div className="text-[11px] font-sans font-semibold text-[#86868b] mb-1 flex items-center gap-1">
             <Lightbulb className="w-3.5 h-3.5" />
             <span>Көмек (Әр сөздің алғашқы әрпі):</span>
           </div>
-          <div className="text-[15px] font-semibold text-[#1d1d1f] dark:text-white select-none">
+          <div className="text-[14px] sm:text-[15px] font-semibold text-[#1d1d1f] dark:text-white select-none">
             {hintText}
           </div>
         </div>
@@ -142,24 +135,24 @@ export function AnswerInput({
       <textarea
         id="user-transcription"
         ref={textareaRef}
-        rows={4}
+        rows={3}
         value={answer}
         onChange={(e) => setAnswer(e.target.value)}
-        placeholder="Естігеніңізді осында теріңіз..."
+        placeholder=""
         spellCheck="true"
         autoCapitalize="sentences"
         autoCorrect="off"
-        className="w-full p-4 rounded-[14px] text-[#1d1d1f] dark:text-[#f5f5f7] placeholder:text-[#86868b] bg-[#f5f5f7] dark:bg-[#000000] border border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.08)] focus:outline-none focus:ring-2 focus:ring-[#0071e3] font-sans text-[17px] leading-[1.47] resize-y transition-all"
+        className="w-full p-3 sm:p-4 rounded-[14px] text-[#1d1d1f] dark:text-[#f5f5f7] placeholder:text-[#86868b] bg-[#f5f5f7] dark:bg-[#000000] border border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.08)] focus:outline-none focus:ring-2 focus:ring-[#0071e3] font-sans text-[16px] sm:text-[17px] leading-[1.47] resize-y transition-all sm:min-h-[110px]"
       />
 
-      {/* Bottom Action Bar */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-2">
-        <div className="flex items-center gap-2">
+      {/* Bottom Action Bar (Thumb-optimized: Check button large & accessible) */}
+      <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-1">
+        <div className="flex items-center justify-between sm:justify-start gap-2 w-full sm:w-auto">
           {/* Replay */}
           <button
             type="button"
             onClick={onReplay}
-            className="apple-btn-secondary text-[13px] !py-2 !px-4"
+            className="apple-btn-secondary flex-1 sm:flex-initial text-[13px] !py-2.5 sm:!py-2 !px-4 justify-center"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             <span>Қайталау (R)</span>
@@ -169,7 +162,7 @@ export function AnswerInput({
           <button
             type="button"
             onClick={onSkipSentence}
-            className="text-[13px] text-[#86868b] hover:text-[#1d1d1f] dark:hover:text-white px-3 py-2 transition-colors cursor-pointer"
+            className="flex-1 sm:flex-initial text-[13px] text-[#86868b] hover:text-[#1d1d1f] dark:hover:text-white px-3 py-2.5 sm:py-2 transition-colors cursor-pointer text-center"
           >
             <span>Өткізіп жіберу</span>
           </button>
@@ -179,11 +172,11 @@ export function AnswerInput({
         <button
           type="button"
           onClick={handleCheck}
-          className="apple-btn-primary text-[14px] !py-2.5 !px-7 font-normal"
+          className="apple-btn-primary w-full sm:w-auto text-[14px] sm:text-[14px] !py-3 sm:!py-2.5 !px-8 font-normal justify-center shadow-xs"
         >
           <Check className="w-4 h-4" />
           <span>Тексеру</span>
-          <span className="hidden sm:inline-flex items-center text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/20 text-white">
+          <span className="hidden sm:inline-flex items-center text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/20 text-white ml-1">
             ⌘+↵
           </span>
         </button>

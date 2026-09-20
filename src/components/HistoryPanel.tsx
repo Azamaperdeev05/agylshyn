@@ -83,15 +83,15 @@ export function HistoryPanel({
             return (
               <div
                 key={session.id}
-                className="rounded-[18px] bg-white dark:bg-[#1d1d1f] p-5 sm:p-6 border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition-all"
+                className="rounded-[18px] bg-white dark:bg-[#1d1d1f] p-4 sm:p-6 border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 transition-all"
               >
                 <div className="space-y-1.5 min-w-0 flex-1">
                   <div className="flex items-center gap-2.5">
-                    <span className="font-semibold text-[17px] text-[#1d1d1f] dark:text-white tracking-[-0.015em] truncate">
+                    <span className="font-semibold text-[16px] sm:text-[17px] text-[#1d1d1f] dark:text-white tracking-[-0.015em] truncate">
                       {session.title}
                     </span>
                     <span
-                      className={`text-[12px] font-semibold px-2 py-0.5 rounded-full ${
+                      className={`text-[11px] sm:text-[12px] font-semibold px-2 py-0.5 rounded-full ${
                         isHighAccuracy
                           ? "bg-[rgba(52,199,89,0.12)] text-[#34c759]"
                           : "bg-[rgba(0,102,204,0.1)] text-[#0066cc] dark:text-[#2997ff]"
@@ -101,11 +101,11 @@ export function HistoryPanel({
                     </span>
                   </div>
 
-                  <p className="text-[14px] text-[#86868b] line-clamp-1 italic">
+                  <p className="text-[13px] sm:text-[14px] text-[#86868b] line-clamp-1 italic">
                     "{session.snippet}"
                   </p>
 
-                  <div className="flex flex-wrap items-center gap-3 text-[12px] text-[#86868b] pt-0.5">
+                  <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-[11px] sm:text-[12px] text-[#86868b] pt-0.5">
                     <span className="flex items-center gap-1">
                       <Calendar className="w-3 h-3" />
                       {dateStr}
@@ -158,8 +158,8 @@ export function HistoryPanel({
 
       {/* Session Details Modal (Apple Sheet) */}
       {selectedSession && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-md animate-in fade-in duration-150">
-          <div className="bg-white dark:bg-[#1d1d1f] rounded-[24px] max-w-2xl w-full p-7 shadow-2xl border border-[rgba(0,0,0,0.1)] dark:border-[rgba(255,255,255,0.1)] space-y-4 max-h-[85vh] flex flex-col">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/40 backdrop-blur-md animate-in fade-in duration-150">
+          <div className="bg-white dark:bg-[#1d1d1f] rounded-[20px] sm:rounded-[24px] max-w-2xl w-full p-5 sm:p-7 shadow-2xl border border-[rgba(0,0,0,0.1)] dark:border-[rgba(255,255,255,0.1)] space-y-4 max-h-[85vh] flex flex-col">
             <div className="flex items-center justify-between pb-3 border-b border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.08)]">
               <div>
                 <h3 className="text-[20px] font-semibold text-[#1d1d1f] dark:text-white tracking-[-0.015em]">

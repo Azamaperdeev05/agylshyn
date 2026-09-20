@@ -78,7 +78,7 @@ export function DictationPlayer({
   );
 
   return (
-    <div className="rounded-[18px] bg-white dark:bg-[#1d1d1f] p-6 sm:p-8 border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] space-y-6">
+    <div className="rounded-[18px] bg-white dark:bg-[#1d1d1f] p-4 sm:p-8 border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] space-y-5 sm:space-y-6">
       {/* Header & Apple Progress Strip */}
       <div className="space-y-2">
         <div className="flex items-center justify-between text-[13px] text-[#86868b]">
