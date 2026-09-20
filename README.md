@@ -1,199 +1,149 @@
-# English Dictation Trainer 🎧
+# English Listening Trainer & Audio Reader 🎧
+### Ағылшын тілін тыңдап үйренуге арналған интерактивті қосымша
 
-An educational, AI-powered English listening and dictation practice web application inspired by 7ESL, enhanced with natural human-like voice synthesis using the **ElevenLabs Text-to-Speech API**.
-
-The application transforms any English passage into an interactive listening exercise: splitting the text into sentences, synthesizing natural speech, enforcing focused listening with anti-cheating DOM guards, providing configurable pause countdowns, and performing word-level diff analysis with precision scoring.
-
----
-
-## 🌟 Key Features
-
-1. **Text Processing & CEFR Difficulty Estimation**
-   - Paste any paragraph, essay, or dialogue.
-   - Smart sentence segmentation with abbreviation protection (`Mr.`, `Dr.`, `e.g.`, `etc.`, `U.S.`, middle initials).
-   - Automated Readability & CEFR Level analysis (A1, A2, B1, B2, C1, C2) with syllable and sentence-length heuristics.
-   - Quick-load curated sample passages (Beginner, Intermediate, Advanced).
-   - Support for drag & drop and `.txt` / `.md` file imports.
-
-2. **Natural AI Speech (ElevenLabs TTS)**
-   - High-fidelity natural voice synthesis via ElevenLabs.
-   - American and British English voice selection (Rachel, Adam, Nicole, George, Charlotte, Alice, etc.).
-   - Voice preview samples directly in the settings panel.
-   - Model selection: `Eleven Multilingual v2`, `Eleven Turbo v2.5`, `Eleven Flash v2.5`.
-   - Dynamic playback speeds: `0.5x`, `0.75x`, `1.0x`, `1.25x`, `1.5x`.
-
-3. **Intelligent Pause & Countdown System**
-   - Configurable pause duration after audio finishes: `0s`, `1s`, `2s`, `3s`, `4s`, `5s`, `7s`, `10s` (Default: 3s).
-   - Visual countdown timer: *"Audio finished. Next sentence in 3... 2... 1..."*.
-   - Auto Next toggle (Automatic flow vs Manual mode for beginners).
-
-4. **Zero Client-Side Key Exposure & Security**
-   - `ELEVENLABS_API_KEY` exists **exclusively on the server** in `.env`.
-   - Never exposed in frontend bundles, `localStorage`, or client-side JavaScript.
-   - Dedicated server API routes (`/api/tts`, `/api/voices`, `/api/status`) proxy all ElevenLabs calls.
-
-5. **Deterministic Audio Caching & Performance**
-   - Replaying a sentence **never** generates a redundant ElevenLabs API call.
-   - In-memory & Blob caching keyed deterministically by `(sentenceText, voiceId, modelId)`.
-   - Background pre-fetching of the next sentence for instant transitions without lag.
-
-6. **Anti-Cheating Design**
-   - The original sentence is strictly hidden during active dictation.
-   - It is never rendered into visible DOM text before checking.
-   - Optional **First-Letter Hint** (`Y____ I g__ t_ t__ u________.`) available on explicit click.
-
-7. **Word-Level Diff Alignment & Precision Scoring**
-   - Needleman-Wunsch / Wagner-Fischer dynamic programming sequence alignment.
-   - Categorizes each word into:
-     - `✓ Correct` (Emerald)
-     - `✕ Incorrect / Wrong` (Rose substitution)
-     - `* Missing` (Amber omission)
-     - `− Extra` (Purple unrequested addition)
-   - Configurable normalization:
-     - Ignore Capitalization (default ON)
-     - Ignore Punctuation (default ON)
-     - Strict Mode (demands exact case and punctuation)
-
-8. **Comprehensive Results & Mistake Practice Mode**
-   - Final results dashboard with circular accuracy gauge.
-   - Performance tier rating: *Easy*, *Moderate*, *Difficult*.
-   - Statistics: total sentences, words, correct, incorrect, missing, replays, practice time.
-   - **Most Difficult Words** ranked leaderboard.
-   - **Targeted Mistake Practice**: re-run only the sentences containing mistakes until mastered.
-
-9. **History & Offline-First Privacy**
-   - Past completed sessions saved locally in `localStorage`.
-   - View past scores, inspect sentence-by-sentence answers, or re-practice previous texts.
-
-10. **Modern, Accessible UI**
-    - Built with Next.js 16, React 19, TypeScript, and Tailwind CSS.
-    - System / Light / Dark theme support with smooth transitions.
-    - Responsive mobile layout with touch-friendly controls.
-    - Keyboard shortcuts:
-      - `Space`: Play / Pause (outside textarea)
-      - `R`: Replay sentence
-      - `Enter` or `⌘/Ctrl + Enter`: Check Answer
-      - `N`: Next Sentence
+> **Live Application / Жұмыс істеп тұрған нұсқасы:** [https://agilshinn.vercel.app](https://agilshinn.vercel.app)
 
 ---
 
-## 🛠️ Tech Stack
-
-- **Framework**: [Next.js](https://nextjs.org/) (App Router, Webpack/Turbopack)
-- **UI & Components**: [React 19](https://react.dev/), [Tailwind CSS](https://tailwindcss.com/), [Lucide React](https://lucide.dev/)
-- **Audio & Animations**: HTML5 Audio API, Canvas Confetti
-- **Language**: TypeScript 5
-- **TTS Engine**: [ElevenLabs API](https://elevenlabs.io/) (Server-Side Proxy)
-- **Persistence**: `localStorage` (No external database required)
+## Тілді таңдаңыз / Choose Language
+- [🇰🇿 Қазақша нұсқасы](#-қазақша)
+- [🇬🇧 English Version](#-english)
 
 ---
 
-## 🚀 Getting Started
+<a name="-қазақша"></a>
+## 🇰🇿 Қазақша
 
-### Prerequisites
+**English Listening Trainer** — ағылшын тіліндегі сөйлеуді есту арқылы түсіну (Listening) қабілетін дамытуға арналған заманауи, Apple дизайны стилінде жасалған веб-қосымша. 
 
-- Node.js v18.18+ or v20+ / v22+
-- npm, pnpm, or yarn
-- ElevenLabs account & API key (free tier available at [elevenlabs.io](https://elevenlabs.io/))
+Қосымша мәтінді сөйлем бойынша реттеп, ElevenLabs жасанды интеллектісінің табиғи дауысымен оқиды. Тыңдаушының зейінін арттыру үшін сөйлем мәтіні әдепкі бойынша жасырылып тұрады және оны көз батырмасын басу арқылы ғана көруге болады.
 
-### 1. Clone & Install Dependencies
+### 🌟 Негізгі мүмкіндіктері
 
+1. **👁️ Жасырын сөйлем және Көз батырмасы**:
+   - Жаңа сөйлемге өткенде мәтін әдепкі бойынша жабық тұрады.
+   - Оқушы алдымен сөйлемді аудиодан тыңдап, түсінуге тырысады.
+   - Тексеру немесе бекіту үшін ортадағы немесе үстіңгі көз (Eye) батырмасын басып, мәтінді аша алады.
+
+2. **🎚️ 0.5x — 1.0x Жылдамдық сырғытпасы (Slider)**:
+   - Жылдамдықты қалауыңызша 0.5x пен 1.0x аралығында интерактивті сызықты сырғыту арқылы реттеуге болады.
+   - Сондай-ақ бір рет басу арқылы `0.5x`, `0.75x`, `1.0x` жылдамдықтарына өту тетіктері бар.
+
+3. **🎙️ Табиғи AI дауысы (ElevenLabs & Pre-generated Audio)**:
+   - Сапалы, табиғи адам дауысына жақын интонация.
+   - 2 негізгі танымдық мәтінге арналған 39 аудиофайл алдын-ала сақталған (API лимитін жұмсамайды және 0 секунд кідіріспен жылдам қосылады).
+
+4. **⏩ Сөйлем бойынша ыңғайлы басқару**:
+   - `← Алдыңғы сөйлем` және `Келесі сөйлем →` батырмалары.
+   - Пернетақтамен басқару:
+     - `Space` — Ойнату / Тоқтату
+     - `R` — Сөйлемді қайталау
+     - `→` немесе `N` — Келесі сөйлем
+     - `←` немесе `P` — Алдыңғы сөйлем
+     - `V` — Мәтінді ашу / жасыру
+
+5. **⏱️ Сөйлемаралық үзіліс және Авто-жалғастыру**:
+   - Сөйлем аяқталған соң күту уақыты (0-ден 10 секундқа дейін).
+   - Авто-жалғастыру (әдепкі күйінде өшірулі тұрады, қаласаңыз қосуға болады).
+
+6. **🎨 Apple Minimalist Дизайны**:
+   - Таза, артық элементтерден ада премиум интерфейс.
+   - Толыққанды Ақ (Light) және Қара (Dark) тақырыптарды қолдау.
+   - Мобильді құрылғылар мен планшеттерге 100% бейімделген (iOS төменгі навигация панелі).
+
+### 🛠️ Технологиялар
+- **Фреймворк**: [Next.js 16](https://nextjs.org/) (App Router, Webpack)
+- **Интерфейс**: [React 19](https://react.dev/), [Tailwind CSS v4](https://tailwindcss.com/), [Lucide Icons](https://lucide.dev/)
+- **Дыбыс синтезі**: [ElevenLabs API](https://elevenlabs.io/)
+- **Тіл**: TypeScript 5
+
+---
+
+<a name="-english"></a>
+## 🇬🇧 English
+
+**English Listening Trainer** is an Apple-inspired interactive web application designed to dramatically improve English listening comprehension and sentence perception using ultra-realistic **ElevenLabs AI voices**.
+
+The application splits passages into structured sentence units, plays crystal-clear speech, keeps text hidden by default to test listening accuracy, and provides intuitive tactile controls like interactive speed sliders and eye-toggle reveals.
+
+### 🌟 Features
+
+1. **👁️ Hidden Sentence Text with Eye Toggle**:
+   - Sentences remain concealed by default so learners focus exclusively on acoustic comprehension.
+   - Clicking the prominent **Eye button** instantly reveals the English transcript for validation.
+   - Automatically re-hides upon advancing to the next sentence.
+
+2. **🎚️ Draggable Speed Slider (0.5x – 1.0x)**:
+   - Smoothly adjust speech rate anywhere between half-speed and normal speed using an Apple-styled range slider track.
+   - Includes quick-tap presets: `0.5x`, `0.75x`, and `1.0x`.
+
+3. **🎙️ Studio-Grade AI Audio (ElevenLabs & Static Zero-Latency Audio)**:
+   - Integrated with ElevenLabs natural neural speech models.
+   - Ships with 39 pre-rendered high-fidelity audio sentences for 2 featured cognitive psychology texts (works offline / zero API credits consumed).
+   - Custom text tab allows pasting any English passage with on-the-fly speech generation.
+
+4. **⏩ Intuitive Sentence Navigation**:
+   - Previous Sentence (`←`) and Next Sentence (`→`) buttons.
+   - Comprehensive keyboard shortcuts:
+     - `Space`: Play / Pause
+     - `R`: Replay current sentence
+     - `ArrowRight` / `N`: Next sentence
+     - `ArrowLeft` / `P`: Previous sentence
+     - `V`: Toggle text visibility
+
+5. **⏱️ Pause Duration & Auto-Advance**:
+   - Configurable inter-sentence pause (`0s` to `10s`).
+   - Auto-next toggle (default is OFF for self-paced listening, can be enabled anytime).
+
+6. **🎨 Premium Apple Aesthetic & Mobile Optimization**:
+   - Minimalist typography and balanced spacing.
+   - Full Light and Dark mode support.
+   - Responsive iOS bottom tab navigation on smartphones.
+
+---
+
+## 🚀 Quick Start / Бастау нұсқаулығы
+
+### 1. Жобаны көшіріп алу / Clone Repository
 ```bash
-git clone <repository-url>
-cd f
+git clone https://github.com/Azamaperdeev05/english-listening-trainer.git
+cd english-listening-trainer
 npm install
 ```
 
-### 2. Configure ElevenLabs API Key
-
-Copy `.env.example` to `.env`:
-
+### 2. Орта айнымалыларын баптау / Environment Variables
 ```bash
 cp .env.example .env
 ```
-
-Open `.env` and add your ElevenLabs API key:
-
+`.env` файлына өзіңіздің ElevenLabs кілтіңізді енгізіңіз:
 ```env
 ELEVENLABS_API_KEY=your_elevenlabs_api_key_here
 ```
+*(Ескерту: Негізгі 2 мәтінді тыңдау үшін API кілті қажет емес, өйткені аудио файлдар жергілікті түрде алдын-ала сақталған).*
 
-> **Security Note**: Never commit your `.env` file. It is already added to `.gitignore`.
-
-### 3. Run Development Server
-
+### 3. Іске қосу / Run Development Server
 ```bash
 npm run dev
 ```
+Браузерден [http://localhost:3000](http://localhost:3000) сілтемесін ашыңыз.
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
-
----
-
-## 🧪 Testing
-
-Run the automated test suite covering sentence segmentation, abbreviation protection, word-level diff, hints, and score calculation:
-
+### 4. Тестілеу және Құрастыру / Tests & Build
 ```bash
-npm test
-```
-
-Build for production:
-
-```bash
-npm run build
+npm test        # Тесттерді орындау
+npm run build   # Продакшн нұсқаны құрастыру
 ```
 
 ---
 
-## 📁 Architecture Overview
+## 🌐 Деплой / Deployment (Vercel)
 
-```
-src/
-├── app/
-│   ├── api/
-│   │   ├── tts/route.ts        # Server route: calls ElevenLabs TTS securely
-│   │   ├── voices/route.ts     # Server route: fetches voice list / fallbacks
-│   │   └── status/route.ts     # Server route: checks API key presence
-│   ├── layout.tsx              # Root HTML & metadata
-│   ├── globals.css             # Tailwind theme & soundwave animations
-│   └── page.tsx                # Main dictation trainer orchestrator
-├── components/
-│   ├── Navbar.tsx              # Brand header, tabs, API status, theme toggle
-│   ├── DictationSetup.tsx      # Text input, CEFR stats, sample texts, briefing
-│   ├── DictationPlayer.tsx     # Audio visualizer, play/pause, replay, countdown
-│   ├── AnswerInput.tsx         # Textarea, hints, keyboard shortcuts
-│   ├── AnswerResult.tsx        # Word-level diff chips, legend, word breakdown
-│   ├── FinalResults.tsx        # Dashboard, celebration, mistake practice trigger
-│   ├── HistoryPanel.tsx        # LocalStorage session history inspector
-│   └── SettingsPanel.tsx       # ElevenLabs voice, model, difficulty & API config
-├── hooks/
-│   ├── useAudioPlayer.ts       # Audio playback, speed, replay counters
-│   ├── useSettings.ts          # Settings persistence & theme management
-│   └── useHistory.ts           # Completed session persistence
-├── lib/
-│   ├── sentenceSplitter.ts     # Segmentation, abbreviations, CEFR estimation
-│   ├── diffEngine.ts           # Needleman-Wunsch word diff & hint generator
-│   ├── scoreCalculator.ts      # Accuracy score, session stats & rankings
-│   ├── audioCache.ts           # In-memory & Blob audio cache & prefetcher
-│   └── sampleTexts.ts          # Curated Beginner, Intermediate & Advanced texts
-└── types/
-    └── dictation.ts            # Core TypeScript interfaces
-```
+1. Жобаны GitHub репозиторийіне салыңыз.
+2. [Vercel](https://vercel.com) платформасына қосыңыз.
+3. Қажет болса, Environment Variables бөліміне `ELEVENLABS_API_KEY` қосыңыз.
+4. Бір батырмамен деплой жасаңыз!
 
 ---
 
-## 🌐 Production Deployment (Vercel)
+## 📄 Лицензия / License
 
-1. Push your repository to GitHub.
-2. Import the repository into [Vercel](https://vercel.com).
-3. In **Project Settings** → **Environment Variables**, add:
-   - Key: `ELEVENLABS_API_KEY`
-   - Value: `your_production_elevenlabs_api_key`
-4. Deploy! Next.js serverless functions will handle `/api/tts` securely.
-
----
-
-## 📄 License
-
-MIT License. Crafted for English learners and educators worldwide.
+MIT License © 2026. Designed for English learners and educators.
