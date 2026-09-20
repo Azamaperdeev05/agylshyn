@@ -313,7 +313,7 @@ export default function Home() {
   const finalStats = calculateSessionStats(sessionResults, totalDuration);
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 selection:bg-blue-500/20">
+    <div className="min-h-screen flex flex-col bg-[#f5f5f7] dark:bg-[#000000] text-[#1d1d1f] dark:text-[#f5f5f7] selection:bg-[#0066cc]/20">
       {/* Top Navbar */}
       <Navbar
         activeTab={activeTab}
@@ -323,7 +323,7 @@ export default function Home() {
       />
 
       {/* Main Content Area */}
-      <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8">
+      <main className="flex-1 max-w-[1024px] w-full mx-auto px-4 sm:px-6 py-8 sm:py-12">
         {activeTab === "practice" && (
           <div>
             {dictationState === "setup" && (
@@ -338,7 +338,7 @@ export default function Home() {
               dictationState === "typing" ||
               dictationState === "checked") &&
               currentSentence && (
-                <div className="max-w-3xl mx-auto space-y-6">
+                <div className="max-w-[840px] mx-auto space-y-6">
                   {/* Audio Player Card */}
                   <DictationPlayer
                     currentSentenceNumber={currentSentenceIndex + 1}
@@ -430,21 +430,49 @@ export default function Home() {
         )}
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-slate-200 dark:border-slate-800 py-6 text-center text-xs text-slate-500 dark:text-slate-400">
-        <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p>
-            English Dictation Trainer • Powered by{" "}
-            <span className="font-semibold text-slate-700 dark:text-slate-300">
-              ElevenLabs AI
-            </span>
-          </p>
-          <div className="flex items-center gap-4 text-[11px]">
-            <span>Zero API Key Exposure</span>
-            <span>•</span>
-            <span>Client-Side Audio Cache</span>
-            <span>•</span>
-            <span>Local Privacy</span>
+      {/* Apple Editorial Footer */}
+      <footer className="bg-[#f5f5f7] dark:bg-[#000000] border-t border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] py-12 text-[12px] text-[#86868b]">
+        <div className="max-w-[1024px] mx-auto px-4 sm:px-6 space-y-4">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pb-4 border-b border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.06)]">
+            <p className="font-semibold text-[#1d1d1f] dark:text-[#f5f5f7]">
+              English Dictation Trainer
+            </p>
+            <div className="flex items-center gap-6">
+              <button
+                type="button"
+                onClick={() => setActiveTab("practice")}
+                className="hover:text-[#1d1d1f] dark:hover:text-white transition-colors cursor-pointer"
+              >
+                Жаттығу
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab("history")}
+                className="hover:text-[#1d1d1f] dark:hover:text-white transition-colors cursor-pointer"
+              >
+                Тарих
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab("settings")}
+                className="hover:text-[#1d1d1f] dark:hover:text-white transition-colors cursor-pointer"
+              >
+                Баптаулар
+              </button>
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-2 pt-1 text-[11px]">
+            <p>
+              Copyright © 2026 Dictation Trainer. Барлық құқықтар қорғалған.
+            </p>
+            <div className="flex items-center gap-3">
+              <span>ElevenLabs AI Voice</span>
+              <span>•</span>
+              <span>Zero-Exposure Security</span>
+              <span>•</span>
+              <span>Local Storage</span>
+            </div>
           </div>
         </div>
       </footer>

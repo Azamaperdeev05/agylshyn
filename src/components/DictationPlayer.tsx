@@ -12,8 +12,7 @@ import {
   Sparkles,
   ToggleLeft,
   ToggleRight,
-  HelpCircle,
-  AlertTriangle,
+  AlertCircle,
 } from "lucide-react";
 import { PlaybackSpeed, PauseDuration, ReplayLimit } from "@/types/dictation";
 
@@ -79,92 +78,92 @@ export function DictationPlayer({
   );
 
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 sm:p-7 shadow-sm border border-slate-200 dark:border-slate-800 space-y-6">
-      {/* Header & Progress Indicator */}
+    <div className="rounded-[18px] bg-white dark:bg-[#1d1d1f] p-6 sm:p-8 border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] space-y-6">
+      {/* Header & Apple Progress Strip */}
       <div className="space-y-2">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between text-[13px] text-[#86868b]">
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wider">
-              Dictation In Progress
+            <span className="font-semibold text-[#0066cc] dark:text-[#2997ff] uppercase tracking-[-0.01em]">
+              Сөйлем {currentSentenceNumber} / {totalSentences}
             </span>
-            <span className="text-xs text-slate-400 dark:text-slate-500">•</span>
-            <span className="text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1">
-              <Volume2 className="w-3.5 h-3.5 text-slate-400" />
+            <span>•</span>
+            <span className="flex items-center gap-1">
+              <Volume2 className="w-3.5 h-3.5" />
               {voiceName}
             </span>
           </div>
 
-          <div className="text-xs font-bold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-full">
-            Sentence {currentSentenceNumber} of {totalSentences}
-          </div>
+          <span className="text-[12px] font-normal">
+            {progressPercent}% орындалды
+          </span>
         </div>
 
-        {/* Progress Bar */}
-        <div className="w-full h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+        {/* Minimal Apple Progress Bar */}
+        <div className="w-full h-1 bg-[rgba(0,0,0,0.06)] dark:bg-[rgba(255,255,255,0.1)] rounded-full overflow-hidden">
           <div
-            className="h-full bg-blue-600 dark:bg-blue-500 rounded-full transition-all duration-300"
-            style={{ width: `${Math.max(5, progressPercent)}%` }}
+            className="h-full bg-[#0066cc] dark:bg-[#2997ff] rounded-full transition-all duration-300"
+            style={{ width: `${Math.max(4, progressPercent)}%` }}
           />
         </div>
       </div>
 
-      {/* Main Playback Center Stage */}
-      <div className="flex flex-col items-center justify-center py-4 space-y-4">
-        {/* Animated Waveform Visualization */}
-        <div className="flex items-center justify-center gap-1.5 h-10">
+      {/* Main Playback Center Area */}
+      <div className="flex flex-col items-center justify-center py-4 space-y-5">
+        {/* Animated Soundwave */}
+        <div className="flex items-center justify-center gap-1.5 h-8">
           {isPlaying ? (
             <>
-              <span className="w-1.5 bg-blue-500 dark:bg-blue-400 rounded-full animate-soundwave-1" />
-              <span className="w-1.5 bg-indigo-500 dark:bg-indigo-400 rounded-full animate-soundwave-2" />
-              <span className="w-1.5 bg-blue-600 dark:bg-blue-500 rounded-full animate-soundwave-3" />
-              <span className="w-1.5 bg-indigo-600 dark:bg-indigo-500 rounded-full animate-soundwave-4" />
-              <span className="w-1.5 bg-blue-500 dark:bg-blue-400 rounded-full animate-soundwave-5" />
+              <span className="w-1 bg-[#0066cc] dark:bg-[#2997ff] rounded-full animate-soundwave-1" />
+              <span className="w-1 bg-[#0066cc] dark:bg-[#2997ff] rounded-full animate-soundwave-2" />
+              <span className="w-1 bg-[#0066cc] dark:bg-[#2997ff] rounded-full animate-soundwave-3" />
+              <span className="w-1 bg-[#0066cc] dark:bg-[#2997ff] rounded-full animate-soundwave-4" />
+              <span className="w-1 bg-[#0066cc] dark:bg-[#2997ff] rounded-full animate-soundwave-5" />
             </>
           ) : (
-            <div className="flex items-center gap-1 text-xs text-slate-400 dark:text-slate-500">
-              <span className="w-1.5 h-2 bg-slate-300 dark:bg-slate-700 rounded-full" />
-              <span className="w-1.5 h-3 bg-slate-300 dark:bg-slate-700 rounded-full" />
-              <span className="w-1.5 h-4 bg-slate-300 dark:bg-slate-700 rounded-full" />
-              <span className="w-1.5 h-3 bg-slate-300 dark:bg-slate-700 rounded-full" />
-              <span className="w-1.5 h-2 bg-slate-300 dark:bg-slate-700 rounded-full" />
+            <div className="flex items-center gap-1 text-[#86868b]">
+              <span className="w-1 h-2 bg-[#86868b]/30 rounded-full" />
+              <span className="w-1 h-3 bg-[#86868b]/40 rounded-full" />
+              <span className="w-1 h-4 bg-[#86868b]/50 rounded-full" />
+              <span className="w-1 h-3 bg-[#86868b]/40 rounded-full" />
+              <span className="w-1 h-2 bg-[#86868b]/30 rounded-full" />
             </div>
           )}
         </div>
 
-        {/* Large Tactile Play & Replay Buttons */}
+        {/* Apple Play & Replay Buttons */}
         <div className="flex items-center gap-4">
-          {/* Main Play / Pause Button */}
+          {/* Main Action Blue Play/Pause Pill Button */}
           <button
             type="button"
             disabled={isLoading}
             onClick={isPlaying ? onPause : onPlay}
-            className={`w-18 h-18 rounded-2xl flex items-center justify-center shadow-lg transition-all transform active:scale-95 cursor-pointer ${
+            className={`w-16 h-16 rounded-full flex items-center justify-center transition-transform duration-150 active:scale-95 cursor-pointer shadow-sm ${
               isLoading
-                ? "bg-slate-200 dark:bg-slate-800 text-slate-400 cursor-not-allowed"
+                ? "bg-[#f5f5f7] dark:bg-[#2c2c2e] text-[#86868b] cursor-not-allowed"
                 : isPlaying
-                ? "bg-amber-500 hover:bg-amber-600 text-white shadow-amber-500/25"
-                : "bg-blue-600 hover:bg-blue-700 text-white shadow-blue-500/30 hover:shadow-blue-500/40"
+                ? "bg-[#1d1d1f] dark:bg-white text-white dark:text-[#1d1d1f]"
+                : "bg-[#0066cc] hover:bg-[#0071e3] text-white"
             }`}
-            title={isPlaying ? "Pause audio" : "Play sentence"}
+            title={isPlaying ? "Pause audio" : "Play sentence (Space)"}
           >
             {isLoading ? (
-              <Loader2 className="w-8 h-8 animate-spin" />
+              <Loader2 className="w-6 h-6 animate-spin" />
             ) : isPlaying ? (
-              <Pause className="w-8 h-8 fill-white" />
+              <Pause className="w-6 h-6 fill-current" />
             ) : (
-              <Play className="w-8 h-8 fill-white ml-1" />
+              <Play className="w-6 h-6 fill-current ml-0.5" />
             )}
           </button>
 
-          {/* Replay Button */}
+          {/* Replay: Apple circular control chip (44x44 translucent chip) */}
           <button
             type="button"
             disabled={isLoading || !canReplay}
             onClick={onReplay}
-            className={`w-14 h-14 rounded-2xl flex flex-col items-center justify-center border transition-all cursor-pointer ${
+            className={`w-11 h-11 rounded-full flex flex-col items-center justify-center transition-all duration-150 active:scale-95 cursor-pointer ${
               !canReplay
-                ? "bg-slate-100 dark:bg-slate-800/40 border-slate-200 dark:border-slate-800 text-slate-300 dark:text-slate-600 cursor-not-allowed"
-                : "bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-750 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 shadow-xs hover:scale-105 active:scale-95"
+                ? "bg-[rgba(0,0,0,0.03)] text-[#86868b]/40 cursor-not-allowed"
+                : "bg-[#f5f5f7] dark:bg-[#2c2c2e] hover:bg-[#e5e5ea] dark:hover:bg-[#3a3a3c] text-[#1d1d1f] dark:text-[#f5f5f7]"
             }`}
             title={
               canReplay
@@ -172,55 +171,55 @@ export function DictationPlayer({
                 : "Maximum replays reached"
             }
           >
-            <RotateCcw className="w-5 h-5" />
+            <RotateCcw className="w-4 h-4" />
             {remainingReplays !== null && (
-              <span className="text-[10px] font-bold mt-0.5 text-slate-500 dark:text-slate-400">
-                {remainingReplays} left
+              <span className="text-[9px] font-semibold text-[#86868b]">
+                {remainingReplays}
               </span>
             )}
           </button>
         </div>
 
-        {/* Loading / Status Label */}
-        <div className="h-6 flex items-center justify-center text-center">
+        {/* Status text */}
+        <div className="h-5 flex items-center justify-center text-center">
           {isLoading ? (
-            <span className="inline-flex items-center gap-2 text-xs font-medium text-blue-600 dark:text-blue-400 animate-pulse">
+            <span className="text-[13px] text-[#0066cc] dark:text-[#2997ff] flex items-center gap-1.5 font-normal">
               <Loader2 className="w-3.5 h-3.5 animate-spin" />
-              Generating natural ElevenLabs speech...
+              Аудио дайындалуда...
             </span>
           ) : isPlaying ? (
-            <span className="text-xs font-medium text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-blue-500 animate-ping" />
-              Listening to sentence {currentSentenceNumber}...
+            <span className="text-[13px] text-[#1d1d1f] dark:text-[#f5f5f7] flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#0066cc] dark:bg-[#2997ff] animate-ping" />
+              {currentSentenceNumber}-сөйлем ойналуда...
             </span>
           ) : errorMessage ? (
-            <span className="text-xs font-medium text-rose-600 dark:text-rose-400 flex items-center gap-1.5">
-              <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+            <span className="text-[13px] text-[#ff3b30] flex items-center gap-1.5">
+              <AlertCircle className="w-3.5 h-3.5" />
               {errorMessage}
             </span>
           ) : (
-            <span className="text-xs text-slate-400 dark:text-slate-500">
-              Press Play or Space to listen • Press R to replay
+            <span className="text-[13px] text-[#86868b]">
+              Тыңдау үшін Play немесе Space басыңыз • Қайталау үшін R
             </span>
           )}
         </div>
 
-        {/* Visual Countdown Timer (Pause system from Section 6) */}
+        {/* Visual Countdown Timer */}
         {isPausedCountdown && (
-          <div className="w-full max-w-sm p-4 rounded-xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800/80 text-center animate-in fade-in zoom-in-95 duration-150">
-            <p className="text-xs font-medium text-blue-700 dark:text-blue-300">
-              Audio finished. Next sentence in:
+          <div className="p-4 rounded-[14px] bg-[#f5f5f7] dark:bg-[#000000] border border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.08)] text-center animate-in fade-in duration-150 max-w-xs w-full">
+            <p className="text-[12px] text-[#86868b]">
+              Келесі сөйлемге дейін:
             </p>
-            <div className="text-3xl font-black text-blue-600 dark:text-blue-400 my-1 animate-pulse">
+            <div className="text-3xl font-semibold text-[#0066cc] dark:text-[#2997ff] my-1">
               {countdownSeconds}
             </div>
             {onCancelCountdown && (
               <button
                 type="button"
                 onClick={onCancelCountdown}
-                className="text-[11px] text-blue-600 dark:text-blue-400 hover:underline font-semibold"
+                className="text-[12px] text-[#0066cc] dark:text-[#2997ff] hover:underline font-normal cursor-pointer"
               >
-                Cancel timer & write now
+                Таймерді тоқтатып, қазір жазу
               </button>
             )}
           </div>
@@ -228,23 +227,23 @@ export function DictationPlayer({
       </div>
 
       {/* Control Strip: Speed, Pause Duration & Auto Next */}
-      <div className="pt-4 border-t border-slate-100 dark:border-slate-800/80 grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
-        {/* Speed Selector */}
+      <div className="pt-4 border-t border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.06)] grid grid-cols-1 sm:grid-cols-3 gap-4 text-[13px]">
+        {/* Speed Selector (Apple Segmented Pill) */}
         <div className="space-y-1.5">
-          <label className="flex items-center gap-1.5 font-semibold text-slate-700 dark:text-slate-300">
-            <Gauge className="w-3.5 h-3.5 text-blue-500" />
-            <span>Playback Speed</span>
+          <label className="flex items-center gap-1.5 font-normal text-[#86868b]">
+            <Gauge className="w-3.5 h-3.5" />
+            <span>Жылдамдық</span>
           </label>
-          <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-lg">
+          <div className="flex items-center gap-0.5 bg-[#f5f5f7] dark:bg-[#000000] p-0.5 rounded-full">
             {SPEED_OPTIONS.map((opt) => (
               <button
                 key={opt}
                 type="button"
                 onClick={() => onSpeedChange(opt)}
-                className={`flex-1 py-1 rounded font-medium text-center transition-all ${
+                className={`flex-1 py-1 rounded-full text-center transition-all cursor-pointer ${
                   speed === opt
-                    ? "bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 font-bold shadow-xs"
-                    : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                    ? "bg-white dark:bg-[#2c2c2e] text-[#1d1d1f] dark:text-white font-semibold shadow-xs"
+                    : "text-[#86868b] hover:text-[#1d1d1f] dark:hover:text-white"
                 }`}
               >
                 {opt}x
@@ -255,20 +254,20 @@ export function DictationPlayer({
 
         {/* Pause Duration Selector */}
         <div className="space-y-1.5">
-          <label className="flex items-center gap-1.5 font-semibold text-slate-700 dark:text-slate-300">
-            <Clock className="w-3.5 h-3.5 text-amber-500" />
-            <span>Pause after sentence</span>
+          <label className="flex items-center gap-1.5 font-normal text-[#86868b]">
+            <Clock className="w-3.5 h-3.5" />
+            <span>Сөйлем арасындағы үзіліс</span>
           </label>
           <select
             value={pauseDuration}
             onChange={(e) =>
               onPauseDurationChange(Number(e.target.value) as PauseDuration)
             }
-            className="w-full py-1.5 px-3 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 font-medium focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className="w-full py-1.5 px-3 rounded-full bg-[#f5f5f7] dark:bg-[#000000] border border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.08)] text-[#1d1d1f] dark:text-[#f5f5f7] font-normal focus:outline-none focus:ring-2 focus:ring-[#0071e3] cursor-pointer"
           >
             {PAUSE_OPTIONS.map((sec) => (
               <option key={sec} value={sec}>
-                {sec === 0 ? "0 sec (Instant)" : `${sec} seconds`}
+                {sec === 0 ? "0 сек (Лезде)" : `${sec} секунд`}
               </option>
             ))}
           </select>
@@ -277,29 +276,26 @@ export function DictationPlayer({
         {/* Auto Next Toggle */}
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
-            <span className="font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5 text-emerald-500" />
-              <span>Auto Next</span>
-            </span>
-            <span className="text-[10px] text-slate-400">
-              {autoNext ? "Automatic" : "Manual"}
+            <span className="font-normal text-[#86868b] flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>Авто-жалғастыру</span>
             </span>
           </div>
 
           <button
             type="button"
             onClick={onToggleAutoNext}
-            className={`w-full py-1.5 px-3 rounded-lg border font-medium flex items-center justify-between transition-colors ${
+            className={`w-full py-1.5 px-4 rounded-full border font-normal flex items-center justify-between transition-all cursor-pointer ${
               autoNext
-                ? "bg-emerald-50 dark:bg-emerald-950/30 border-emerald-300 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300"
-                : "bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400"
+                ? "bg-[rgba(52,199,89,0.08)] border-[#34c759]/30 text-[#34c759]"
+                : "bg-[#f5f5f7] dark:bg-[#000000] border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.08)] text-[#86868b]"
             }`}
           >
-            <span>{autoNext ? "Auto Advance ON" : "Wait for Learner (OFF)"}</span>
+            <span>{autoNext ? "Автоматты түрде" : "Қолмен басқару"}</span>
             {autoNext ? (
-              <ToggleRight className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+              <ToggleRight className="w-5 h-5 text-[#34c759]" />
             ) : (
-              <ToggleLeft className="w-5 h-5 text-slate-400" />
+              <ToggleLeft className="w-5 h-5 text-[#86868b]" />
             )}
           </button>
         </div>

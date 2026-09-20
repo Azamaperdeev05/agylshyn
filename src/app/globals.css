@@ -2,45 +2,149 @@
 
 @layer base {
   :root {
-    --background: #f8fafc;
-    --foreground: #0f172a;
-    --card: #ffffff;
-    --card-foreground: #0f172a;
-    --primary: #2563eb;
-    --primary-foreground: #ffffff;
-    --muted: #f1f5f9;
-    --muted-foreground: #64748b;
-    --border: #e2e8f0;
-    --accent: #eff6ff;
-    --accent-foreground: #1d4ed8;
+    --canvas: #ffffff;
+    --canvas-parchment: #f5f5f7;
+    --surface-pearl: #fafafc;
+    --surface-tile-1: #272729;
+    --surface-tile-2: #2a2a2c;
+    --surface-tile-3: #252527;
+    --surface-black: #000000;
+    --surface-chip: rgba(210, 210, 215, 0.64);
+    --primary: #0066cc;
+    --primary-focus: #0071e3;
+    --primary-on-dark: #2997ff;
+    --ink: #1d1d1f;
+    --ink-muted-80: #333333;
+    --ink-muted-48: #7a7a7a;
+    --body-muted: #86868b;
+    --hairline: rgba(0, 0, 0, 0.08);
+    --divider-soft: rgba(0, 0, 0, 0.04);
+    --shadow-product: 3px 5px 30px rgba(0, 0, 0, 0.18);
   }
 
   .dark {
-    --background: #090d16;
-    --foreground: #f8fafc;
-    --card: #0f172a;
-    --card-foreground: #f8fafc;
-    --primary: #3b82f6;
-    --primary-foreground: #ffffff;
-    --muted: #1e293b;
-    --muted-foreground: #94a3b8;
-    --border: #1e293b;
-    --accent: #1e293b;
-    --accent-foreground: #60a5fa;
+    --canvas: #1d1d1f;
+    --canvas-parchment: #000000;
+    --surface-pearl: #272729;
+    --surface-tile-1: #272729;
+    --surface-tile-2: #2a2a2c;
+    --surface-tile-3: #252527;
+    --surface-black: #000000;
+    --surface-chip: rgba(80, 80, 85, 0.6);
+    --primary: #0071e3;
+    --primary-focus: #2997ff;
+    --primary-on-dark: #2997ff;
+    --ink: #f5f5f7;
+    --ink-muted-80: #e5e5e7;
+    --ink-muted-48: #a1a1a6;
+    --body-muted: #86868b;
+    --hairline: rgba(255, 255, 255, 0.12);
+    --divider-soft: rgba(255, 255, 255, 0.06);
+    --shadow-product: 3px 5px 30px rgba(0, 0, 0, 0.4);
   }
 }
 
 body {
-  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "SF Pro", "Inter", system-ui, sans-serif;
+  background-color: var(--canvas-parchment);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Apple typography utilities */
+.apple-headline {
+  letter-spacing: -0.022em;
+  font-weight: 600;
+}
+
+.apple-body {
+  font-size: 17px;
+  line-height: 1.47;
+  letter-spacing: -0.012em;
+}
+
+/* Apple Buttons */
+.apple-btn-primary {
+  background-color: #0066cc;
+  color: #ffffff;
+  border-radius: 9999px;
+  font-size: 14px;
+  font-weight: 400;
+  padding: 9px 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+  cursor: pointer;
+  border: none;
+}
+
+.apple-btn-primary:hover {
+  background-color: #0071e3;
+}
+
+.apple-btn-primary:active {
+  transform: scale(0.95);
+}
+
+.apple-btn-secondary {
+  background-color: transparent;
+  color: #0066cc;
+  border: 1px solid #0066cc;
+  border-radius: 9999px;
+  font-size: 14px;
+  font-weight: 400;
+  padding: 8px 18px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: transform 0.15s ease, background-color 0.15s ease;
+  cursor: pointer;
+}
+
+.apple-btn-secondary:hover {
+  background-color: rgba(0, 102, 204, 0.06);
+}
+
+.apple-btn-secondary:active {
+  transform: scale(0.95);
+}
+
+.dark .apple-btn-secondary {
+  color: #2997ff;
+  border-color: #2997ff;
+}
+
+.dark .apple-btn-secondary:hover {
+  background-color: rgba(41, 151, 255, 0.1);
+}
+
+/* Apple Card */
+.apple-card {
+  background-color: var(--canvas);
+  border-radius: 18px;
+  border: 1px solid var(--hairline);
+}
+
+/* Apple Product Shadow (only for featured surface items) */
+.apple-product-shadow {
+  box-shadow: 3px 5px 30px rgba(0, 0, 0, 0.16);
+}
+
+.dark .apple-product-shadow {
+  box-shadow: 3px 5px 30px rgba(0, 0, 0, 0.45);
 }
 
 /* Custom soundwave pulse animation */
 @keyframes soundwave {
   0%, 100% {
-    height: 6px;
+    height: 4px;
   }
   50% {
-    height: 28px;
+    height: 24px;
   }
 }
 
@@ -69,9 +173,9 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.4);
+  background: rgba(148, 163, 184, 0.3);
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(148, 163, 184, 0.6);
+  background: rgba(148, 163, 184, 0.5);
 }
