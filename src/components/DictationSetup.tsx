@@ -95,9 +95,22 @@ export function DictationSetup({
     setIsDragging(false);
   };
 
+  const currentFeatured = useMemo(() => {
+    return FEATURED_TEXTS.find((f) => f.id === selectedFeaturedId);
+  }, [selectedFeaturedId]);
+
+  const isFeaturedActive =
+    activeTab === "featured" &&
+    !!currentFeatured &&
+    inputText.trim() === currentFeatured.text.trim();
+
   const handleConfirmStart = () => {
     setShowPreflight(false);
-    onStartSession(analysis.sentences, inputText);
+    if (isFeaturedActive && currentFeatured) {
+      onStartSession(currentFeatured.sentences, currentFeatured.text);
+    } else {
+      onStartSession(analysis.sentences, inputText);
+    }
   };
 
   return (
@@ -183,6 +196,12 @@ export function DictationSetup({
                     <span className="text-indigo-600 dark:text-indigo-400 font-medium">
                       {item.topic}
                     </span>
+                  </div>
+
+                  {/* Pre-generated Audio Badge */}
+                  <div className="flex items-center gap-1.5 text-[11px] font-medium text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 px-2.5 py-1 rounded-lg border border-emerald-200/80 dark:border-emerald-900/60 mt-1">
+                    <Sparkles className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                    <span>Дайын ElevenLabs AI аудиосы • Лимит жұмсалмайды</span>
                   </div>
                 </div>
 
@@ -346,6 +365,18 @@ export function DictationSetup({
               </p>
             </div>
 
+            {isFeaturedActive && (
+              <div className="flex items-start gap-2.5 p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs">
+                <Sparkles className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-bold">Алдын-ала әзірленген AI аудиосы</p>
+                  <p className="text-[11px] text-emerald-700/80 dark:text-emerald-300/80 mt-0.5">
+                    Барлық {currentFeatured?.sentencesCount} сөйлемнің дыбысы жүктелген. ElevenLabs API квотасы жұмсалмайды, кідіріссіз ойнайды.
+                  </p>
+                </div>
+              </div>
+            )}
+
             {/* Session Parameters Card */}
             <div className="bg-slate-50 dark:bg-slate-950 rounded-xl p-4 border border-slate-200 dark:border-slate-800 space-y-3 text-sm">
               <div className="flex items-center justify-between text-slate-700 dark:text-slate-300">
@@ -354,7 +385,9 @@ export function DictationSetup({
                   Көлемі:
                 </span>
                 <span className="font-semibold">
-                  {analysis.sentenceCount} сөйлем • {analysis.wordCount} сөз
+                  {isFeaturedActive && currentFeatured
+                    ? `${currentFeatured.sentencesCount} сөйлем • ${currentFeatured.wordCount} сөз`
+                    : `${analysis.sentenceCount} сөйлем • ${analysis.wordCount} сөз`}
                 </span>
               </div>
 

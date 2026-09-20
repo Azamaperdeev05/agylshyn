@@ -1,21 +1,29 @@
-import { Sentence } from "@/types/dictation";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-export interface FeaturedText {
-  id: string;
-  number: number;
-  title: string;
-  subtitle: string;
-  level: string;
-  cefr: "B1" | "B2" | "C1";
-  topic: string;
-  description: string;
-  sentencesCount: number;
-  wordCount: number;
-  text: string;
-  sentences: Sentence[];
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const rootDir = path.resolve(__dirname, "..");
+
+// Read API key from .env
+let apiKey = process.env.ELEVENLABS_API_KEY;
+if (!apiKey && fs.existsSync(path.join(rootDir, ".env"))) {
+  const envContent = fs.readFileSync(path.join(rootDir, ".env"), "utf-8");
+  const match = envContent.match(/ELEVENLABS_API_KEY=([^\r\n]+)/);
+  if (match) {
+    apiKey = match[1].trim();
+  }
 }
 
-const TEXT_1_SENTENCES_RAW = [
+if (!apiKey) {
+  apiKey = "sk_2a9a61fb24a06de3c7c4bc8efb18f5b7392a4f6cff2706aa";
+}
+
+const VOICE_ID = "EXAVITQu4vr4xnSDxMaL"; // Sarah (Verified ElevenLabs voice)
+const MODEL_ID = "eleven_multilingual_v2";
+
+const text1Sentences = [
   "Jill Price was the first person to be diagnosed with HSAM (Highly Superior Autobiographical Memory), a condition which enables someone to remember the events of their life in great detail.",
   "Jill doesn’t make the effort to learn things by heart – it just happens.",
   "However, her ability only functions with things she is interested in.",
@@ -34,10 +42,10 @@ const TEXT_1_SENTENCES_RAW = [
   "People in many walks of life – students, teachers, lawyers – need to remember information to be successful.",
   "Even if we can’t recall details in the way Price, Veiseh and Borges’s Funes can, maybe there are things we can learn from McGaugh’s research.",
   "For example, we’re more likely to remember information if we focus deeply on it, or if we can find an emotional connection with it.",
-  "Understanding these things might benefit all of us.",
+  "Understanding these things might benefit all of us."
 ];
 
-const TEXT_2_SENTENCES_RAW = [
+const text2Sentences = [
   "In Jorge Luis Borges’s story Funes the Memorious, the title character falls off his horse, bangs his head, and suddenly remembers everything he’s ever experienced.",
   "He remembers the changing shapes of clouds and the exact position of a dog at different times of day.",
   "He remembers every leaf on every tree he’s ever seen and reconstructs his dreams at will.",
@@ -57,47 +65,83 @@ const TEXT_2_SENTENCES_RAW = [
   "It was a Friday, and Price heard the news on the car radio on her way to football practice.",
   "Asked about the date of one major international event, she got the answer wrong.",
   "McGaugh corrected her, but she insisted.",
-  "He checked another source and found that the book was wrong.",
+  "He checked another source and found that the book was wrong."
 ];
 
-function buildSentences(rawList: string[], folder: "text-1" | "text-2"): Sentence[] {
-  return rawList.map((text, i) => ({
-    id: i + 1,
-    text: text.trim(),
-    wordCount: (text.match(/[\w'-]+/g) || []).length,
-    audioUrl: `/audio/${folder}/sentence_${i + 1}.mp3`,
-  }));
+async function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export const FEATURED_TEXTS: FeaturedText[] = [
-  {
-    id: "text-1",
-    number: 1,
-    title: "1-Мәтін: The Science of Memory",
-    subtitle: "Jill Price, HSAM & Dr. McGaugh's Research",
-    level: "Intermediate / B2",
-    cefr: "B2",
-    topic: "Cognitive Psychology",
-    description:
-      "Джилл Прайстың ерекше жады (HSAM), доктор МакГоның 50 жылдық зерттеулері және есте сақтауды жақсартудың құпиялары туралы мәтін.",
-    sentencesCount: TEXT_1_SENTENCES_RAW.length,
-    wordCount: 254,
-    text: TEXT_1_SENTENCES_RAW.join("\n\n"),
-    sentences: buildSentences(TEXT_1_SENTENCES_RAW, "text-1"),
-  },
-  {
-    id: "text-2",
-    number: 2,
-    title: "2-Мәтін: The Reality of Total Recall",
-    subtitle: "Borges's Funes, Nima Veiseh & Testing Memory",
-    level: "Upper-Intermediate / B2",
-    cefr: "B2",
-    topic: "Literature & Memory",
-    description:
-      "Хорхе Луис Борхестің кейіпкері Фунес, суретші Нима Вейсе және доктор МакГоның есте сақтауды тексеру эксперименттері.",
-    sentencesCount: TEXT_2_SENTENCES_RAW.length,
-    wordCount: 285,
-    text: TEXT_2_SENTENCES_RAW.join("\n\n"),
-    sentences: buildSentences(TEXT_2_SENTENCES_RAW, "text-2"),
-  },
-];
+async function synthesizeSentence(text, outputPath) {
+  if (fs.existsSync(outputPath) && fs.statSync(outputPath).size > 1000) {
+    console.log(`  [EXISTS] ${path.basename(outputPath)} already generated (${fs.statSync(outputPath).size} bytes)`);
+    return;
+  }
+
+  const response = await fetch(
+    `https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}`,
+    {
+      method: "POST",
+      headers: {
+        "xi-api-key": apiKey,
+        "Content-Type": "application/json",
+        Accept: "audio/mpeg",
+      },
+      body: JSON.stringify({
+        text,
+        model_id: MODEL_ID,
+        voice_settings: {
+          stability: 0.5,
+          similarity_boost: 0.8,
+          style: 0.0,
+          use_speaker_boost: true,
+        },
+      }),
+    }
+  );
+
+  if (!response.ok) {
+    const errText = await response.text();
+    throw new Error(`Failed to synthesize sentence: ${response.status} ${response.statusText} - ${errText}`);
+  }
+
+  const buffer = Buffer.from(await response.arrayBuffer());
+  fs.writeFileSync(outputPath, buffer);
+  console.log(`  [OK] Saved ${path.basename(outputPath)} (${buffer.length} bytes)`);
+}
+
+async function run() {
+  console.log("=== ElevenLabs Audio Pre-Generator ===");
+  console.log(`Voice: Sarah (${VOICE_ID}), Model: ${MODEL_ID}`);
+
+  // Text 1
+  const dir1 = path.join(rootDir, "public", "audio", "text-1");
+  fs.mkdirSync(dir1, { recursive: true });
+  console.log(`\n--- Generating Text 1 (${text1Sentences.length} sentences) ---`);
+  for (let i = 0; i < text1Sentences.length; i++) {
+    const text = text1Sentences[i];
+    const outFile = path.join(dir1, `sentence_${i + 1}.mp3`);
+    console.log(`Text 1 [${i + 1}/${text1Sentences.length}]: "${text.slice(0, 40)}..."`);
+    await synthesizeSentence(text, outFile);
+    await sleep(350);
+  }
+
+  // Text 2
+  const dir2 = path.join(rootDir, "public", "audio", "text-2");
+  fs.mkdirSync(dir2, { recursive: true });
+  console.log(`\n--- Generating Text 2 (${text2Sentences.length} sentences) ---`);
+  for (let i = 0; i < text2Sentences.length; i++) {
+    const text = text2Sentences[i];
+    const outFile = path.join(dir2, `sentence_${i + 1}.mp3`);
+    console.log(`Text 2 [${i + 1}/${text2Sentences.length}]: "${text.slice(0, 40)}..."`);
+    await synthesizeSentence(text, outFile);
+    await sleep(350);
+  }
+
+  console.log("\n=== ALL AUDIO PRE-GENERATED SUCCESSFULLY! ===");
+}
+
+run().catch((err) => {
+  console.error("FATAL ERROR:", err);
+  process.exit(1);
+});

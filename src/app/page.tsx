@@ -98,7 +98,11 @@ export default function Home() {
     if (dictationState !== "setup" && dictationState !== "completed") {
       const nextIndex = currentSentenceIndex + 1;
       if (nextIndex < sentences.length) {
-        prefetchNext(sentences[nextIndex].text);
+        const nextSentence = sentences[nextIndex];
+        // Only fetch via API if it is not already a pre-generated static audio file
+        if (!nextSentence.audioUrl) {
+          prefetchNext(nextSentence.text);
+        }
       }
     }
   }, [currentSentenceIndex, sentences, dictationState, prefetchNext]);
@@ -135,7 +139,7 @@ export default function Home() {
 
     // Automatically play first sentence (Section 31)
     setTimeout(() => {
-      playSentence(newSentences[0].text);
+      playSentence(newSentences[0].text, false, newSentences[0].audioUrl);
     }, 150);
   };
 
@@ -183,7 +187,7 @@ export default function Home() {
     setCurrentResult(null);
     sentenceStartTimeRef.current = Date.now();
     setDictationState("playing");
-    playSentence(currentSentence.text);
+    playSentence(currentSentence.text, false, currentSentence.audioUrl);
   };
 
   // Move to next sentence or finish
@@ -197,7 +201,7 @@ export default function Home() {
       setCurrentSentenceIndex(nextIdx);
       sentenceStartTimeRef.current = Date.now();
       setDictationState("playing");
-      playSentence(sentences[nextIdx].text);
+      playSentence(sentences[nextIdx].text, false, sentences[nextIdx].audioUrl);
     } else {
       // Completed all sentences!
       setDictationState("completed");
@@ -259,11 +263,17 @@ export default function Home() {
   const handlePracticeMistakes = () => {
     const mistakeSentences = sessionResults
       .filter((r) => r.accuracy < 100)
-      .map((r, i) => ({
-        id: i + 1,
-        text: r.originalText,
-        wordCount: r.totalExpectedWords,
-      }));
+      .map((r, i) => {
+        const orig = sentences.find(
+          (s) => s.id === r.sentenceId || s.text === r.originalText
+        );
+        return {
+          id: i + 1,
+          text: r.originalText,
+          wordCount: r.totalExpectedWords,
+          audioUrl: orig?.audioUrl,
+        };
+      });
 
     if (mistakeSentences.length > 0) {
       handleStartSession(mistakeSentences, rawTextSnippetRef.current, true);
@@ -343,7 +353,13 @@ export default function Home() {
                     autoNext={settings.autoNext}
                     isPausedCountdown={isPausedCountdown}
                     countdownSeconds={countdownSeconds}
-                    onPlay={() => playSentence(currentSentence.text)}
+                    onPlay={() =>
+                      playSentence(
+                        currentSentence.text,
+                        false,
+                        currentSentence.audioUrl
+                      )
+                    }
                     onPause={pause}
                     onReplay={replay}
                     onSpeedChange={(speed) => updateSettings({ speed })}

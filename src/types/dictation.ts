@@ -12,6 +12,7 @@ export interface Sentence {
   id: number;
   text: string;
   wordCount: number;
+  audioUrl?: string;
 }
 
 export interface SentenceResult {

@@ -26,6 +26,7 @@ export function useAudioPlayer({
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const currentSentenceRef = useRef<string>("");
+  const currentAudioUrlRef = useRef<string | undefined>(undefined);
   const onEndedRef = useRef(onEnded);
 
   useEffect(() => {
@@ -82,7 +83,7 @@ export function useAudioPlayer({
 
   // Load and play a specific sentence
   const playSentence = useCallback(
-    async (sentenceText: string, isReplay = false) => {
+    async (sentenceText: string, isReplay = false, staticAudioUrl?: string) => {
       if (!sentenceText) return;
 
       const audio = audioRef.current;
@@ -93,9 +94,14 @@ export function useAudioPlayer({
 
       try {
         currentSentenceRef.current = sentenceText;
+        if (staticAudioUrl !== undefined) {
+          currentAudioUrlRef.current = staticAudioUrl;
+        }
 
-        // Fetch (from cache or ElevenLabs endpoint)
-        const audioUrl = await fetchSentenceAudio(sentenceText, voiceId, modelId);
+        // Use static audio URL if provided, otherwise fetch/cache dynamically
+        const audioUrl =
+          currentAudioUrlRef.current ||
+          (await fetchSentenceAudio(sentenceText, voiceId, modelId));
 
         if (audio.src !== audioUrl) {
           audio.src = audioUrl;
@@ -143,7 +149,7 @@ export function useAudioPlayer({
 
   const replay = useCallback(async () => {
     if (currentSentenceRef.current) {
-      await playSentence(currentSentenceRef.current, true);
+      await playSentence(currentSentenceRef.current, true, currentAudioUrlRef.current);
     }
   }, [playSentence]);
 
