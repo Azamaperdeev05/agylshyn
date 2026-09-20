@@ -120,7 +120,7 @@ export function DictationSetup({
           English Dictation Trainer.
         </h1>
         <p className="text-[14px] sm:text-[18px] text-[#86868b] max-w-xl mx-auto leading-[1.47] font-normal tracking-[-0.012em] px-2">
-          Жад пен ерекше есте сақтау қабілетіне арналған 2 негізгі мәтін. Табиғи ElevenLabs AI дауысымен тыңдап, сөйлем бойынша диктант жазыңыз.
+          Жад пен ерекше есте сақтау қабілетіне арналған 2 негізгі мәтін. Табиғи ElevenLabs AI дауысымен тыңдап, сөйлем бойынша тыңдаңыз.
         </p>
       </div>
 
@@ -227,7 +227,7 @@ export function DictationSetup({
                       onClick={() => handleQuickStartFeatured(item)}
                       className="apple-btn-primary text-[13px] !py-2.5 sm:!py-2 !px-5 justify-center"
                     >
-                      <span>Диктантты бастау</span>
+                      <span>Тыңдауды бастау</span>
                       <Play className="w-3 h-3 fill-current ml-1" />
                     </button>
                   </div>
@@ -315,7 +315,7 @@ export function DictationSetup({
             onClick={() => setShowPreflight(true)}
             className="apple-btn-primary w-full sm:w-auto text-[14px] !py-3 sm:!py-2.5 !px-7 disabled:opacity-40 disabled:cursor-not-allowed shadow-xs justify-center"
           >
-            <span>Диктантты бастау</span>
+            <span>Тыңдауды бастау</span>
             <Play className="w-3.5 h-3.5 fill-current ml-1" />
           </button>
         </div>
@@ -333,7 +333,7 @@ export function DictationSetup({
                 Жаттығуға дайынсыз ба?
               </h3>
               <p className="text-[13px] sm:text-[14px] text-[#86868b] leading-[1.47]">
-                ElevenLabs AI дауысы әр сөйлемді ретімен оқиды. Тыңдап, естігеніңізді теріңіз.
+                ElevenLabs AI дауысы әр сөйлемді ретімен оқиды. Әр сөйлемді мұқият тыңдап, интонациясын меңгеріңіз.
               </p>
             </div>
 

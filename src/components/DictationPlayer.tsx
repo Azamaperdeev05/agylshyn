@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Play,
   Pause,
@@ -13,12 +13,16 @@ import {
   ToggleLeft,
   ToggleRight,
   AlertCircle,
+  ArrowLeft,
+  ArrowRight,
+  X,
 } from "lucide-react";
 import { PlaybackSpeed, PauseDuration, ReplayLimit } from "@/types/dictation";
 
 interface DictationPlayerProps {
   currentSentenceNumber: number;
   totalSentences: number;
+  sentenceText: string;
   isPlaying: boolean;
   isLoading: boolean;
   errorMessage: string | null;
@@ -29,9 +33,14 @@ interface DictationPlayerProps {
   autoNext: boolean;
   isPausedCountdown: boolean;
   countdownSeconds: number;
+  hasPrev: boolean;
+  isLast: boolean;
   onPlay: () => void;
   onPause: () => void;
   onReplay: () => void;
+  onNextSentence: () => void;
+  onPrevSentence: () => void;
+  onExitSession: () => void;
   onSpeedChange: (speed: PlaybackSpeed) => void;
   onPauseDurationChange: (duration: PauseDuration) => void;
   onToggleAutoNext: () => void;
@@ -45,6 +54,7 @@ const PAUSE_OPTIONS: PauseDuration[] = [0, 1, 2, 3, 4, 5, 7, 10];
 export function DictationPlayer({
   currentSentenceNumber,
   totalSentences,
+  sentenceText,
   isPlaying,
   isLoading,
   errorMessage,
@@ -55,9 +65,14 @@ export function DictationPlayer({
   autoNext,
   isPausedCountdown,
   countdownSeconds,
+  hasPrev,
+  isLast,
   onPlay,
   onPause,
   onReplay,
+  onNextSentence,
+  onPrevSentence,
+  onExitSession,
   onSpeedChange,
   onPauseDurationChange,
   onToggleAutoNext,
@@ -77,11 +92,37 @@ export function DictationPlayer({
     ((currentSentenceNumber - 1) / Math.max(1, totalSentences)) * 100
   );
 
+  // Global keyboard shortcuts for listening experience
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName === "INPUT" || target.tagName === "TEXTAREA") return;
+
+      if (e.code === "Space") {
+        e.preventDefault();
+        if (isPlaying) onPause();
+        else onPlay();
+      } else if (e.key === "r" || e.key === "R") {
+        e.preventDefault();
+        onReplay();
+      } else if (e.key === "ArrowRight" || e.key === "n" || e.key === "N") {
+        e.preventDefault();
+        onNextSentence();
+      } else if ((e.key === "ArrowLeft" || e.key === "p" || e.key === "P") && hasPrev) {
+        e.preventDefault();
+        onPrevSentence();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isPlaying, onPause, onPlay, onReplay, onNextSentence, onPrevSentence, hasPrev]);
+
   return (
-    <div className="rounded-[18px] bg-white dark:bg-[#1d1d1f] p-4 sm:p-8 border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] space-y-5 sm:space-y-6">
+    <div className="rounded-[18px] bg-white dark:bg-[#1d1d1f] p-4 sm:p-8 border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.08)] space-y-6">
       {/* Header & Apple Progress Strip */}
       <div className="space-y-2">
-        <div className="flex items-center justify-between text-[13px] text-[#86868b]">
+        <div className="flex items-center justify-between text-[12px] sm:text-[13px] text-[#86868b]">
           <div className="flex items-center gap-2">
             <span className="font-semibold text-[#0066cc] dark:text-[#2997ff] uppercase tracking-[-0.01em]">
               Сөйлем {currentSentenceNumber} / {totalSentences}
@@ -93,9 +134,18 @@ export function DictationPlayer({
             </span>
           </div>
 
-          <span className="text-[12px] font-normal">
-            {progressPercent}% орындалды
-          </span>
+          <div className="flex items-center gap-3">
+            <span className="font-normal">{progressPercent}%</span>
+            <button
+              type="button"
+              onClick={onExitSession}
+              className="text-[#86868b] hover:text-[#ff3b30] flex items-center gap-1 transition-colors cursor-pointer text-[12px]"
+              title="Шығу"
+            >
+              <X className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Шығу</span>
+            </button>
+          </div>
         </div>
 
         {/* Minimal Apple Progress Bar */}
@@ -107,8 +157,15 @@ export function DictationPlayer({
         </div>
       </div>
 
+      {/* English Sentence Display (Large, Crisp Apple Typography) */}
+      <div className="py-6 sm:py-10 px-4 sm:px-8 bg-[#f5f5f7] dark:bg-[#000000] rounded-[16px] border border-[rgba(0,0,0,0.04)] dark:border-[rgba(255,255,255,0.06)] text-center min-h-[120px] sm:min-h-[160px] flex items-center justify-center transition-all">
+        <p className="text-[20px] sm:text-[25px] md:text-[28px] font-medium text-[#1d1d1f] dark:text-white leading-[1.45] tracking-[-0.018em] select-text">
+          {sentenceText}
+        </p>
+      </div>
+
       {/* Main Playback Center Area */}
-      <div className="flex flex-col items-center justify-center py-4 space-y-5">
+      <div className="flex flex-col items-center justify-center py-2 space-y-4">
         {/* Animated Soundwave */}
         <div className="flex items-center justify-center gap-1.5 h-8">
           {isPlaying ? (
@@ -155,7 +212,7 @@ export function DictationPlayer({
             )}
           </button>
 
-          {/* Replay: Apple circular control chip (44x44 translucent chip) */}
+          {/* Replay: Apple circular control chip */}
           <button
             type="button"
             disabled={isLoading || !canReplay}
@@ -167,8 +224,8 @@ export function DictationPlayer({
             }`}
             title={
               canReplay
-                ? "Replay current sentence (Press R)"
-                : "Maximum replays reached"
+                ? "Қайталау (R)"
+                : "Қайталау лимиті шегіне жетті"
             }
           >
             <RotateCcw className="w-4 h-4" />
@@ -198,15 +255,15 @@ export function DictationPlayer({
               {errorMessage}
             </span>
           ) : (
-            <span className="text-[13px] text-[#86868b]">
+            <span className="text-[12px] sm:text-[13px] text-[#86868b]">
               Тыңдау үшін Play немесе Space басыңыз • Қайталау үшін R
             </span>
           )}
         </div>
 
-        {/* Visual Countdown Timer */}
+        {/* Visual Countdown Timer (When auto-next is active) */}
         {isPausedCountdown && (
-          <div className="p-4 rounded-[14px] bg-[#f5f5f7] dark:bg-[#000000] border border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.08)] text-center animate-in fade-in duration-150 max-w-xs w-full">
+          <div className="p-3.5 rounded-[14px] bg-[#f5f5f7] dark:bg-[#000000] border border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.08)] text-center animate-in fade-in duration-150 max-w-xs w-full">
             <p className="text-[12px] text-[#86868b]">
               Келесі сөйлемге дейін:
             </p>
@@ -219,15 +276,37 @@ export function DictationPlayer({
                 onClick={onCancelCountdown}
                 className="text-[12px] text-[#0066cc] dark:text-[#2997ff] hover:underline font-normal cursor-pointer"
               >
-                Таймерді тоқтатып, қазір жазу
+                Таймерді тоқтатып, қазір өту
               </button>
             )}
           </div>
         )}
       </div>
 
+      {/* Previous / Next Navigation Row */}
+      <div className="flex items-center justify-between gap-3 pt-2 border-t border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.06)]">
+        <button
+          type="button"
+          disabled={!hasPrev}
+          onClick={onPrevSentence}
+          className="apple-btn-secondary flex-1 sm:flex-initial !py-2.5 !px-5 disabled:opacity-30 disabled:cursor-not-allowed justify-center text-[13px]"
+        >
+          <ArrowLeft className="w-4 h-4 mr-1" />
+          <span>Алдыңғы сөйлем</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={onNextSentence}
+          className="apple-btn-primary flex-1 sm:flex-initial !py-2.5 !px-7 justify-center text-[14px] shadow-xs"
+        >
+          <span>{isLast ? "Аяқтау" : "Келесі сөйлем"}</span>
+          <ArrowRight className="w-4 h-4 ml-1" />
+        </button>
+      </div>
+
       {/* Control Strip: Speed, Pause Duration & Auto Next */}
-      <div className="pt-4 border-t border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.06)] grid grid-cols-1 sm:grid-cols-3 gap-4 text-[13px]">
+      <div className="pt-2 border-t border-[rgba(0,0,0,0.04)] dark:border-[rgba(255,255,255,0.06)] grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 text-[13px]">
         {/* Speed Selector (Apple Segmented Pill) */}
         <div className="space-y-1.5">
           <label className="flex items-center gap-1.5 font-normal text-[#86868b]">
@@ -240,7 +319,7 @@ export function DictationPlayer({
                 key={opt}
                 type="button"
                 onClick={() => onSpeedChange(opt)}
-                className={`flex-1 py-1 rounded-full text-center transition-all cursor-pointer ${
+                className={`flex-1 py-1 rounded-full text-center transition-all cursor-pointer text-[12px] ${
                   speed === opt
                     ? "bg-white dark:bg-[#2c2c2e] text-[#1d1d1f] dark:text-white font-semibold shadow-xs"
                     : "text-[#86868b] hover:text-[#1d1d1f] dark:hover:text-white"
@@ -263,7 +342,7 @@ export function DictationPlayer({
             onChange={(e) =>
               onPauseDurationChange(Number(e.target.value) as PauseDuration)
             }
-            className="w-full py-1.5 px-3 rounded-full bg-[#f5f5f7] dark:bg-[#000000] border border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.08)] text-[#1d1d1f] dark:text-[#f5f5f7] font-normal focus:outline-none focus:ring-2 focus:ring-[#0071e3] cursor-pointer"
+            className="w-full py-1.5 px-3 rounded-full bg-[#f5f5f7] dark:bg-[#000000] border border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.08)] text-[#1d1d1f] dark:text-[#f5f5f7] font-normal focus:outline-none focus:ring-2 focus:ring-[#0071e3] cursor-pointer text-[13px]"
           >
             {PAUSE_OPTIONS.map((sec) => (
               <option key={sec} value={sec}>
@@ -285,7 +364,7 @@ export function DictationPlayer({
           <button
             type="button"
             onClick={onToggleAutoNext}
-            className={`w-full py-1.5 px-4 rounded-full border font-normal flex items-center justify-between transition-all cursor-pointer ${
+            className={`w-full py-1.5 px-4 rounded-full border font-normal flex items-center justify-between transition-all cursor-pointer text-[13px] ${
               autoNext
                 ? "bg-[rgba(52,199,89,0.08)] border-[#34c759]/30 text-[#34c759]"
                 : "bg-[#f5f5f7] dark:bg-[#000000] border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.08)] text-[#86868b]"

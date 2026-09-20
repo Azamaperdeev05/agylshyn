@@ -4,15 +4,12 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Navbar } from "@/components/Navbar";
 import { DictationSetup } from "@/components/DictationSetup";
 import { DictationPlayer } from "@/components/DictationPlayer";
-import { AnswerInput } from "@/components/AnswerInput";
-import { AnswerResult } from "@/components/AnswerResult";
 import { FinalResults } from "@/components/FinalResults";
 import { HistoryPanel } from "@/components/HistoryPanel";
 import { SettingsPanel } from "@/components/SettingsPanel";
 import { useSettings } from "@/hooks/useSettings";
 import { useAudioPlayer } from "@/hooks/useAudioPlayer";
 import { useHistory } from "@/hooks/useHistory";
-import { compareSentences } from "@/lib/diffEngine";
 import { calculateSessionStats } from "@/lib/scoreCalculator";
 import {
   Sentence,
@@ -35,7 +32,6 @@ export default function Home() {
   const [sentences, setSentences] = useState<Sentence[]>([]);
   const [currentSentenceIndex, setCurrentSentenceIndex] = useState(0);
   const [sessionResults, setSessionResults] = useState<SentenceResult[]>([]);
-  const [currentResult, setCurrentResult] = useState<SentenceResult | null>(null);
 
   // Timing and countdown
   const [isPausedCountdown, setIsPausedCountdown] = useState(false);
@@ -44,7 +40,6 @@ export default function Home() {
   const sessionStartTimeRef = useRef<number>(0);
   const sentenceStartTimeRef = useRef<number>(0);
   const rawTextSnippetRef = useRef<string>("");
-  const isMistakePracticeModeRef = useRef<boolean>(false);
 
   // Clear countdown timer safely
   const clearCountdown = useCallback(() => {
@@ -54,6 +49,8 @@ export default function Home() {
     }
     setIsPausedCountdown(false);
   }, []);
+
+  const handleNextSentenceRef = useRef<() => void>(() => {});
 
   // Audio player hook
   const {
@@ -73,19 +70,28 @@ export default function Home() {
     speed: settings.speed,
     onEnded: () => {
       // Audio playback finished
-      if (settings.pauseDuration > 0 && settings.autoNext) {
-        setIsPausedCountdown(true);
-        setCountdownSeconds(settings.pauseDuration);
+      if (settings.autoNext) {
+        if (settings.pauseDuration > 0) {
+          setIsPausedCountdown(true);
+          setCountdownSeconds(settings.pauseDuration);
 
-        let remaining = settings.pauseDuration;
-        countdownIntervalRef.current = setInterval(() => {
-          remaining -= 1;
-          if (remaining <= 0) {
-            clearCountdown();
-          } else {
-            setCountdownSeconds(remaining);
+          let remaining = settings.pauseDuration;
+          if (countdownIntervalRef.current) {
+            clearInterval(countdownIntervalRef.current);
           }
-        }, 1000);
+          countdownIntervalRef.current = setInterval(() => {
+            remaining -= 1;
+            if (remaining <= 0) {
+              clearCountdown();
+              handleNextSentenceRef.current();
+            } else {
+              setCountdownSeconds(remaining);
+            }
+          }, 1000);
+        } else {
+          // Immediately advance if pause duration is 0
+          handleNextSentenceRef.current();
+        }
       }
     },
   });
@@ -119,8 +125,7 @@ export default function Home() {
   // Start a new session
   const handleStartSession = (
     newSentences: Sentence[],
-    rawText: string,
-    isMistakesMode = false
+    rawText: string
   ) => {
     if (newSentences.length === 0) return;
 
@@ -128,76 +133,67 @@ export default function Home() {
     setSentences(newSentences);
     setCurrentSentenceIndex(0);
     setSessionResults([]);
-    setCurrentResult(null);
     rawTextSnippetRef.current = rawText;
-    isMistakePracticeModeRef.current = isMistakesMode;
     sessionStartTimeRef.current = Date.now();
     sentenceStartTimeRef.current = Date.now();
     resetReplayCount();
 
     setDictationState("playing");
 
-    // Automatically play first sentence (Section 31)
+    // Automatically play first sentence
     setTimeout(() => {
       playSentence(newSentences[0].text, false, newSentences[0].audioUrl);
     }, 150);
   };
 
-  // Check user answer
-  const handleCheckAnswer = (userAnswer: string, usedHint: boolean) => {
-    if (!currentSentence) return;
+  // Move to previous sentence
+  const handlePrevSentence = useCallback(() => {
     clearCountdown();
+    resetReplayCount();
+    if (currentSentenceIndex > 0) {
+      const prevIdx = currentSentenceIndex - 1;
+      setCurrentSentenceIndex(prevIdx);
+      sentenceStartTimeRef.current = Date.now();
+      setDictationState("playing");
+      playSentence(sentences[prevIdx].text, false, sentences[prevIdx].audioUrl);
+    }
+  }, [clearCountdown, resetReplayCount, currentSentenceIndex, sentences, playSentence]);
 
-    const diff = compareSentences(currentSentence.text, userAnswer, {
-      ignoreCapitalization: settings.ignoreCapitalization,
-      ignorePunctuation: settings.ignorePunctuation,
-      strictMode: settings.strictMode,
-    });
+  // Move to next sentence or finish
+  const handleNextSentence = useCallback(() => {
+    clearCountdown();
+    resetReplayCount();
 
-    const timeTakenSeconds = Math.round(
-      (Date.now() - sentenceStartTimeRef.current) / 1000
+    const curr = sentences[currentSentenceIndex];
+    if (!curr) return;
+
+    const timeTakenSeconds = Math.max(
+      1,
+      Math.round((Date.now() - sentenceStartTimeRef.current) / 1000)
     );
 
-    const result: SentenceResult = {
-      sentenceId: currentSentence.id,
-      originalText: currentSentence.text,
-      userAnswer,
-      tokens: diff.tokens,
-      accuracy: diff.accuracy,
-      correctWords: diff.correctWords,
-      wrongWords: diff.wrongWords,
-      missingWords: diff.missingWords,
-      extraWords: diff.extraWords,
-      totalExpectedWords: diff.totalExpectedWords,
+    const completedResult: SentenceResult = {
+      sentenceId: curr.id,
+      originalText: curr.text,
+      userAnswer: curr.text,
+      tokens: [],
+      accuracy: 100,
+      correctWords: curr.wordCount,
+      wrongWords: 0,
+      missingWords: 0,
+      extraWords: 0,
+      totalExpectedWords: curr.wordCount,
       replaysUsed,
-      hintUsed: usedHint,
+      hintUsed: false,
       timeTakenSeconds,
     };
 
-    setCurrentResult(result);
-    setSessionResults((prev) => [...prev, result]);
-    setDictationState("checked");
-  };
-
-  // Try current sentence again
-  const handleTryAgain = () => {
-    clearCountdown();
-    // Remove last result from session results
-    setSessionResults((prev) => prev.slice(0, -1));
-    setCurrentResult(null);
-    sentenceStartTimeRef.current = Date.now();
-    setDictationState("playing");
-    playSentence(currentSentence.text, false, currentSentence.audioUrl);
-  };
-
-  // Move to next sentence or finish
-  const handleNextSentence = () => {
-    clearCountdown();
-    setCurrentResult(null);
-    resetReplayCount();
-
     const nextIdx = currentSentenceIndex + 1;
     if (nextIdx < sentences.length) {
+      setSessionResults((prev) => {
+        const filtered = prev.filter((r) => r.sentenceId !== curr.id);
+        return [...filtered, completedResult];
+      });
       setCurrentSentenceIndex(nextIdx);
       sentenceStartTimeRef.current = Date.now();
       setDictationState("playing");
@@ -205,94 +201,55 @@ export default function Home() {
     } else {
       // Completed all sentences!
       setDictationState("completed");
-      const totalDuration = Math.round(
-        (Date.now() - sessionStartTimeRef.current) / 1000
+      const totalDuration = Math.max(
+        1,
+        Math.round((Date.now() - sessionStartTimeRef.current) / 1000)
       );
-      const allResults = [...sessionResults];
-      if (currentResult && !allResults.some((r) => r.sentenceId === currentResult.sentenceId)) {
-        allResults.push(currentResult);
-      }
-      const stats = calculateSessionStats(allResults, totalDuration);
+      setSessionResults((prev) => {
+        const filtered = prev.filter((r) => r.sentenceId !== curr.id);
+        const allResults = [...filtered, completedResult];
+        const stats = calculateSessionStats(allResults, totalDuration);
 
-      // Save to localStorage history
-      const title = isMistakePracticeModeRef.current
-        ? "Mistake Practice Session"
-        : sentences[0]?.text.slice(0, 45) || "Dictation Practice";
+        const title = sentences[0]?.text.slice(0, 45) || "Listening Practice";
 
-      saveSession(
-        title,
-        rawTextSnippetRef.current,
-        allResults,
-        stats.overallAccuracy,
-        totalDuration,
-        stats.performanceRating
-      );
-    }
-  };
-
-  // Skip sentence
-  const handleSkipSentence = () => {
-    if (!currentSentence) return;
-    // Register as 0% accuracy
-    const skippedResult: SentenceResult = {
-      sentenceId: currentSentence.id,
-      originalText: currentSentence.text,
-      userAnswer: "(Skipped)",
-      tokens: [
-        {
-          type: "missing",
-          expected: currentSentence.text,
-        },
-      ],
-      accuracy: 0,
-      correctWords: 0,
-      wrongWords: 0,
-      missingWords: currentSentence.wordCount,
-      extraWords: 0,
-      totalExpectedWords: currentSentence.wordCount,
-      replaysUsed,
-      hintUsed: false,
-      timeTakenSeconds: 0,
-    };
-
-    setSessionResults((prev) => [...prev, skippedResult]);
-    handleNextSentence();
-  };
-
-  // Practice Mistakes Mode (Section 15)
-  const handlePracticeMistakes = () => {
-    const mistakeSentences = sessionResults
-      .filter((r) => r.accuracy < 100)
-      .map((r, i) => {
-        const orig = sentences.find(
-          (s) => s.id === r.sentenceId || s.text === r.originalText
+        saveSession(
+          title,
+          rawTextSnippetRef.current,
+          allResults,
+          100,
+          totalDuration,
+          stats.performanceRating
         );
-        return {
-          id: i + 1,
-          text: r.originalText,
-          wordCount: r.totalExpectedWords,
-          audioUrl: orig?.audioUrl,
-        };
+        return allResults;
       });
-
-    if (mistakeSentences.length > 0) {
-      handleStartSession(mistakeSentences, rawTextSnippetRef.current, true);
     }
-  };
+  }, [
+    clearCountdown,
+    resetReplayCount,
+    sentences,
+    currentSentenceIndex,
+    replaysUsed,
+    playSentence,
+    saveSession,
+  ]);
+
+  // Keep ref updated for onEnded callback
+  useEffect(() => {
+    handleNextSentenceRef.current = handleNextSentence;
+  }, [handleNextSentence]);
 
   // Restart same text
   const handleRestartSameText = () => {
-    handleStartSession(sentences, rawTextSnippetRef.current, false);
+    handleStartSession(sentences, rawTextSnippetRef.current);
   };
 
-  // New dictation text
+  // New dictation / listening text
   const handleNewDictation = () => {
     clearCountdown();
     setDictationState("setup");
     setSentences([]);
     setCurrentSentenceIndex(0);
     setSessionResults([]);
-    setCurrentResult(null);
   };
 
   // Start from history
@@ -303,12 +260,13 @@ export default function Home() {
       wordCount: r.totalExpectedWords,
     }));
     setActiveTab("practice");
-    handleStartSession(loadedSentences, histSession.snippet, false);
+    handleStartSession(loadedSentences, histSession.snippet);
   };
 
   // Calculate final statistics for completed screen
-  const totalDuration = Math.round(
-    (Date.now() - sessionStartTimeRef.current) / 1000
+  const totalDuration = Math.max(
+    1,
+    Math.round((Date.now() - sessionStartTimeRef.current) / 1000)
   );
   const finalStats = calculateSessionStats(sessionResults, totalDuration);
 
@@ -334,80 +292,59 @@ export default function Home() {
               />
             )}
 
-            {(dictationState === "playing" ||
-              dictationState === "typing" ||
-              dictationState === "checked") &&
-              currentSentence && (
-                <div className="max-w-[840px] mx-auto space-y-6">
-                  {/* Audio Player Card */}
-                  <DictationPlayer
-                    currentSentenceNumber={currentSentenceIndex + 1}
-                    totalSentences={sentences.length}
-                    isPlaying={isPlaying}
-                    isLoading={isLoading}
-                    errorMessage={errorMessage}
-                    replaysUsed={replaysUsed}
-                    maxReplays={settings.maxReplays}
-                    speed={settings.speed}
-                    pauseDuration={settings.pauseDuration}
-                    autoNext={settings.autoNext}
-                    isPausedCountdown={isPausedCountdown}
-                    countdownSeconds={countdownSeconds}
-                    onPlay={() =>
-                      playSentence(
-                        currentSentence.text,
-                        false,
-                        currentSentence.audioUrl
-                      )
-                    }
-                    onPause={pause}
-                    onReplay={replay}
-                    onSpeedChange={(speed) => updateSettings({ speed })}
-                    onPauseDurationChange={(pauseDuration) =>
-                      updateSettings({ pauseDuration })
-                    }
-                    onToggleAutoNext={() =>
-                      updateSettings({
-                        autoNext: !settings.autoNext,
-                        _userSetAutoNext: true,
-                      } as any)
-                    }
-                    onCancelCountdown={clearCountdown}
-                    voiceName={settings.voiceName}
-                  />
-
-                  {/* Active Dictation Input (Anti-Cheat: original sentence NOT displayed in DOM) */}
-                  {dictationState !== "checked" ? (
-                    <AnswerInput
-                      originalSentence={currentSentence.text}
-                      onCheckAnswer={handleCheckAnswer}
-                      onSkipSentence={handleSkipSentence}
-                      onReplay={replay}
-                      isPlaying={isPlaying}
-                      onTogglePlay={isPlaying ? pause : resume}
-                      onNextSentence={handleNextSentence}
-                      canNextSentence={false}
-                    />
-                  ) : (
-                    currentResult && (
-                      <AnswerResult
-                        result={currentResult}
-                        isLastSentence={
-                          currentSentenceIndex === sentences.length - 1
-                        }
-                        onTryAgain={handleTryAgain}
-                        onNextSentence={handleNextSentence}
-                      />
+            {dictationState === "playing" && currentSentence && (
+              <div className="max-w-[840px] mx-auto">
+                <DictationPlayer
+                  currentSentenceNumber={currentSentenceIndex + 1}
+                  totalSentences={sentences.length}
+                  sentenceText={currentSentence.text}
+                  isPlaying={isPlaying}
+                  isLoading={isLoading}
+                  errorMessage={errorMessage}
+                  replaysUsed={replaysUsed}
+                  maxReplays={settings.maxReplays}
+                  speed={settings.speed}
+                  pauseDuration={settings.pauseDuration}
+                  autoNext={settings.autoNext}
+                  isPausedCountdown={isPausedCountdown}
+                  countdownSeconds={countdownSeconds}
+                  hasPrev={currentSentenceIndex > 0}
+                  isLast={currentSentenceIndex === sentences.length - 1}
+                  onPlay={() =>
+                    playSentence(
+                      currentSentence.text,
+                      false,
+                      currentSentence.audioUrl
                     )
-                  )}
-                </div>
-              )}
+                  }
+                  onPause={pause}
+                  onReplay={replay}
+                  onNextSentence={handleNextSentence}
+                  onPrevSentence={handlePrevSentence}
+                  onExitSession={() => {
+                    clearCountdown();
+                    setDictationState("setup");
+                  }}
+                  onSpeedChange={(speed) => updateSettings({ speed })}
+                  onPauseDurationChange={(pauseDuration) =>
+                    updateSettings({ pauseDuration })
+                  }
+                  onToggleAutoNext={() =>
+                    updateSettings({
+                      autoNext: !settings.autoNext,
+                      _userSetAutoNext: true,
+                    } as any)
+                  }
+                  onCancelCountdown={clearCountdown}
+                  voiceName={settings.voiceName}
+                />
+              </div>
+            )}
 
             {dictationState === "completed" && (
               <FinalResults
                 stats={finalStats}
                 results={sessionResults}
-                onPracticeMistakes={handlePracticeMistakes}
                 onRestartSameText={handleRestartSameText}
                 onNewDictation={handleNewDictation}
               />
