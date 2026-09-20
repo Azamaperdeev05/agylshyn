@@ -25,7 +25,7 @@ const DEFAULT_SETTINGS: UserSettings = {
   ignorePunctuation: true,
   strictMode: false,
   difficultyPreset: "intermediate",
-  theme: "system",
+  theme: "light",
 };
 
 export function useSettings() {
@@ -38,7 +38,13 @@ export function useSettings() {
       const stored = localStorage.getItem(SETTINGS_STORAGE_KEY);
       if (stored) {
         const parsed = JSON.parse(stored);
+        // Force light mode so the user gets the requested white theme
+        if (!parsed.theme || parsed.theme === "system" || parsed.theme === "dark") {
+          parsed.theme = "light";
+        }
         setSettings((prev) => ({ ...prev, ...parsed }));
+      } else {
+        setSettings((prev) => ({ ...prev, theme: "light" }));
       }
     } catch {
       // Ignore parse errors and keep defaults

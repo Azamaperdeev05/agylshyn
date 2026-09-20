@@ -3,7 +3,7 @@
 @layer base {
   :root {
     --canvas: #ffffff;
-    --canvas-parchment: #f5f5f7;
+    --canvas-parchment: #ffffff;
     --surface-pearl: #fafafc;
     --surface-tile-1: #272729;
     --surface-tile-2: #2a2a2c;
@@ -46,7 +46,7 @@
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "SF Pro", "Inter", system-ui, sans-serif;
-  background-color: var(--canvas-parchment);
+  background-color: #ffffff;
   color: var(--ink);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

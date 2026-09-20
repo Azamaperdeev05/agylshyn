@@ -313,7 +313,7 @@ export default function Home() {
   const finalStats = calculateSessionStats(sessionResults, totalDuration);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#f5f5f7] dark:bg-[#000000] text-[#1d1d1f] dark:text-[#f5f5f7] selection:bg-[#0066cc]/20">
+    <div className="min-h-screen flex flex-col bg-[#ffffff] dark:bg-[#000000] text-[#1d1d1f] dark:text-[#f5f5f7] selection:bg-[#0066cc]/20">
       {/* Top Navbar */}
       <Navbar
         activeTab={activeTab}
