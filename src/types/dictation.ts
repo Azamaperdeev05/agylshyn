@@ -45,7 +45,7 @@ export interface DictationStats {
   difficultWords: { word: string; count: number }[];
 }
 
-export type PlaybackSpeed = 0.5 | 0.75 | 1.0 | 1.25 | 1.5;
+export type PlaybackSpeed = number;
 export type PauseDuration = 0 | 1 | 2 | 3 | 4 | 5 | 7 | 10;
 export type ReplayLimit = "unlimited" | 1 | 2 | 3 | 5;
 export type DifficultyPreset = "beginner" | "intermediate" | "advanced" | "custom";

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Play,
   Pause,
@@ -16,6 +16,8 @@ import {
   ArrowLeft,
   ArrowRight,
   X,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import { PlaybackSpeed, PauseDuration, ReplayLimit } from "@/types/dictation";
 
@@ -48,7 +50,7 @@ interface DictationPlayerProps {
   voiceName: string;
 }
 
-const SPEED_OPTIONS: PlaybackSpeed[] = [0.5, 0.75, 1.0, 1.25, 1.5];
+const SPEED_PRESETS: number[] = [0.5, 0.75, 1.0];
 const PAUSE_OPTIONS: PauseDuration[] = [0, 1, 2, 3, 4, 5, 7, 10];
 
 export function DictationPlayer({
@@ -92,6 +94,14 @@ export function DictationPlayer({
     ((currentSentenceNumber - 1) / Math.max(1, totalSentences)) * 100
   );
 
+  // Text visibility toggle (hidden by default as requested)
+  const [isTextVisible, setIsTextVisible] = useState(false);
+
+  // Reset visibility whenever the sentence changes so it is hidden by default
+  useEffect(() => {
+    setIsTextVisible(false);
+  }, [currentSentenceNumber, sentenceText]);
+
   // Global keyboard shortcuts for listening experience
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -111,6 +121,9 @@ export function DictationPlayer({
       } else if ((e.key === "ArrowLeft" || e.key === "p" || e.key === "P") && hasPrev) {
         e.preventDefault();
         onPrevSentence();
+      } else if (e.key === "v" || e.key === "V") {
+        e.preventDefault();
+        setIsTextVisible((prev) => !prev);
       }
     };
 
@@ -157,11 +170,64 @@ export function DictationPlayer({
         </div>
       </div>
 
-      {/* English Sentence Display (Large, Crisp Apple Typography) */}
-      <div className="py-6 sm:py-10 px-4 sm:px-8 bg-[#f5f5f7] dark:bg-[#000000] rounded-[16px] border border-[rgba(0,0,0,0.04)] dark:border-[rgba(255,255,255,0.06)] text-center min-h-[120px] sm:min-h-[160px] flex items-center justify-center transition-all">
-        <p className="text-[20px] sm:text-[25px] md:text-[28px] font-medium text-[#1d1d1f] dark:text-white leading-[1.45] tracking-[-0.018em] select-text">
-          {sentenceText}
-        </p>
+      {/* English Sentence Display Area (Hidden by default, revealable via Eye button) */}
+      <div className="relative py-5 sm:py-7 px-4 sm:px-8 bg-[#f5f5f7] dark:bg-[#000000] rounded-[18px] border border-[rgba(0,0,0,0.05)] dark:border-[rgba(255,255,255,0.07)] min-h-[140px] sm:min-h-[170px] flex flex-col justify-between transition-all">
+        {/* Top Bar with Eye Toggle Button */}
+        <div className="w-full flex items-center justify-between pb-3 mb-2 border-b border-[rgba(0,0,0,0.04)] dark:border-[rgba(255,255,255,0.05)] text-[12px] text-[#86868b]">
+          <span className="font-normal text-[11px] sm:text-[12px]">
+            {isTextVisible ? "Мәтін көрсетілді" : "Мәтін жасырулы (тыңдалым режимі)"}
+          </span>
+
+          <button
+            type="button"
+            onClick={() => setIsTextVisible((prev) => !prev)}
+            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[12px] font-medium transition-all cursor-pointer ${
+              isTextVisible
+                ? "bg-[rgba(0,0,0,0.06)] dark:bg-[rgba(255,255,255,0.1)] text-[#1d1d1f] dark:text-white hover:bg-[rgba(0,0,0,0.1)]"
+                : "bg-[#0066cc]/10 dark:bg-[#2997ff]/15 text-[#0066cc] dark:text-[#2997ff] hover:bg-[#0066cc]/20"
+            }`}
+            title={isTextVisible ? "Мәтінді жасыру" : "Мәтінді көрсету (V)"}
+          >
+            {isTextVisible ? (
+              <>
+                <EyeOff className="w-3.5 h-3.5" />
+                <span>Мәтінді жасыру</span>
+              </>
+            ) : (
+              <>
+                <Eye className="w-3.5 h-3.5" />
+                <span>Мәтінді көрсету</span>
+              </>
+            )}
+          </button>
+        </div>
+
+        {/* Content: Visible Text vs Hidden Eye-Prompt */}
+        <div className="flex-1 flex items-center justify-center py-2">
+          {isTextVisible ? (
+            <p className="text-[20px] sm:text-[25px] md:text-[28px] font-medium text-[#1d1d1f] dark:text-white leading-[1.45] tracking-[-0.018em] select-text text-center animate-in fade-in duration-200">
+              {sentenceText}
+            </p>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setIsTextVisible(true)}
+              className="group py-3 px-4 flex flex-col items-center justify-center gap-2 cursor-pointer transition-transform active:scale-[0.99] text-center"
+            >
+              <div className="w-11 h-11 rounded-full bg-white dark:bg-[#1c1c1e] text-[#0066cc] dark:text-[#2997ff] shadow-xs border border-[rgba(0,0,0,0.08)] dark:border-[rgba(255,255,255,0.1)] flex items-center justify-center group-hover:scale-105 transition-transform">
+                <Eye className="w-5 h-5" />
+              </div>
+              <div className="space-y-0.5">
+                <p className="text-[14px] sm:text-[15px] font-medium text-[#1d1d1f] dark:text-[#f5f5f7] group-hover:text-[#0066cc] dark:group-hover:text-[#2997ff] transition-colors">
+                  Мәтінді көру үшін көз батырмасын басыңыз
+                </p>
+                <p className="text-[12px] text-[#86868b]">
+                  Алдымен аудионы мұқият тыңдап көріңіз
+                </p>
+              </div>
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Main Playback Center Area */}
@@ -305,36 +371,61 @@ export function DictationPlayer({
         </button>
       </div>
 
-      {/* Control Strip: Speed, Pause Duration & Auto Next */}
+      {/* Control Strip: Speed Slider, Pause Duration & Auto Next */}
       <div className="pt-2 border-t border-[rgba(0,0,0,0.04)] dark:border-[rgba(255,255,255,0.06)] grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 text-[13px]">
-        {/* Speed Selector (Apple Segmented Pill) */}
-        <div className="space-y-1.5">
-          <label className="flex items-center gap-1.5 font-normal text-[#86868b]">
-            <Gauge className="w-3.5 h-3.5" />
-            <span>Жылдамдық</span>
-          </label>
-          <div className="flex items-center gap-0.5 bg-[#f5f5f7] dark:bg-[#000000] p-0.5 rounded-full">
-            {SPEED_OPTIONS.map((opt) => (
+        {/* Speed Slider (0.5x - 1.0x) */}
+        <div className="space-y-2 p-3 rounded-[14px] bg-[#f5f5f7] dark:bg-[#000000] border border-[rgba(0,0,0,0.04)] dark:border-[rgba(255,255,255,0.06)] flex flex-col justify-between">
+          <div className="flex items-center justify-between">
+            <label className="flex items-center gap-1.5 font-normal text-[#86868b] text-[12px] sm:text-[13px]">
+              <Gauge className="w-3.5 h-3.5 text-[#0066cc] dark:text-[#2997ff]" />
+              <span>Жылдамдық</span>
+            </label>
+            <span className="px-2 py-0.5 rounded-full bg-white dark:bg-[#1c1c1e] text-[#0066cc] dark:text-[#2997ff] font-semibold text-[12px] sm:text-[13px] border border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.1)] shadow-2xs">
+              {Number(speed).toFixed(2).replace(/\.?0+$/, "")}x
+            </span>
+          </div>
+
+          <div className="px-0.5 space-y-1.5">
+            <input
+              type="range"
+              min="0.5"
+              max="1.0"
+              step="0.05"
+              value={Math.min(1.0, Math.max(0.5, Number(speed)))}
+              onChange={(e) => onSpeedChange(parseFloat(e.target.value))}
+              aria-label="Аудио жылдамдығы"
+              className="w-full h-2.5 bg-[#e5e5ea] dark:bg-[#2c2c2e] rounded-full appearance-none cursor-pointer accent-[#0066cc] dark:accent-[#2997ff] focus:outline-none"
+            />
+            <div className="flex items-center justify-between text-[11px] text-[#86868b] font-normal">
               <button
-                key={opt}
                 type="button"
-                onClick={() => onSpeedChange(opt)}
-                className={`flex-1 py-1 rounded-full text-center transition-all cursor-pointer text-[12px] ${
-                  speed === opt
-                    ? "bg-white dark:bg-[#2c2c2e] text-[#1d1d1f] dark:text-white font-semibold shadow-xs"
-                    : "text-[#86868b] hover:text-[#1d1d1f] dark:hover:text-white"
-                }`}
+                onClick={() => onSpeedChange(0.5)}
+                className="hover:text-[#0066cc] dark:hover:text-[#2997ff] transition-colors cursor-pointer"
               >
-                {opt}x
+                0.5x
               </button>
-            ))}
+              <button
+                type="button"
+                onClick={() => onSpeedChange(0.75)}
+                className="hover:text-[#0066cc] dark:hover:text-[#2997ff] transition-colors cursor-pointer"
+              >
+                0.75x
+              </button>
+              <button
+                type="button"
+                onClick={() => onSpeedChange(1.0)}
+                className="hover:text-[#0066cc] dark:hover:text-[#2997ff] transition-colors cursor-pointer"
+              >
+                1.0x
+              </button>
+            </div>
           </div>
         </div>
 
         {/* Pause Duration Selector */}
-        <div className="space-y-1.5">
-          <label className="flex items-center gap-1.5 font-normal text-[#86868b]">
-            <Clock className="w-3.5 h-3.5" />
+        <div className="space-y-2 p-3 rounded-[14px] bg-[#f5f5f7] dark:bg-[#000000] border border-[rgba(0,0,0,0.04)] dark:border-[rgba(255,255,255,0.06)] flex flex-col justify-between">
+          <label className="flex items-center gap-1.5 font-normal text-[#86868b] text-[12px] sm:text-[13px]">
+            <Clock className="w-3.5 h-3.5 text-[#0066cc] dark:text-[#2997ff]" />
             <span>Сөйлем арасындағы үзіліс</span>
           </label>
           <select
@@ -342,7 +433,7 @@ export function DictationPlayer({
             onChange={(e) =>
               onPauseDurationChange(Number(e.target.value) as PauseDuration)
             }
-            className="w-full py-1.5 px-3 rounded-full bg-[#f5f5f7] dark:bg-[#000000] border border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.08)] text-[#1d1d1f] dark:text-[#f5f5f7] font-normal focus:outline-none focus:ring-2 focus:ring-[#0071e3] cursor-pointer text-[13px]"
+            className="w-full py-1.5 px-3 rounded-full bg-white dark:bg-[#1c1c1e] border border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.08)] text-[#1d1d1f] dark:text-[#f5f5f7] font-normal focus:outline-none focus:ring-2 focus:ring-[#0071e3] cursor-pointer text-[13px]"
           >
             {PAUSE_OPTIONS.map((sec) => (
               <option key={sec} value={sec}>
@@ -353,10 +444,10 @@ export function DictationPlayer({
         </div>
 
         {/* Auto Next Toggle */}
-        <div className="space-y-1.5">
+        <div className="space-y-2 p-3 rounded-[14px] bg-[#f5f5f7] dark:bg-[#000000] border border-[rgba(0,0,0,0.04)] dark:border-[rgba(255,255,255,0.06)] flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="font-normal text-[#86868b] flex items-center gap-1.5">
-              <Sparkles className="w-3.5 h-3.5" />
+            <span className="font-normal text-[#86868b] flex items-center gap-1.5 text-[12px] sm:text-[13px]">
+              <Sparkles className="w-3.5 h-3.5 text-[#0066cc] dark:text-[#2997ff]" />
               <span>Авто-жалғастыру</span>
             </span>
           </div>
@@ -367,7 +458,7 @@ export function DictationPlayer({
             className={`w-full py-1.5 px-4 rounded-full border font-normal flex items-center justify-between transition-all cursor-pointer text-[13px] ${
               autoNext
                 ? "bg-[rgba(52,199,89,0.08)] border-[#34c759]/30 text-[#34c759]"
-                : "bg-[#f5f5f7] dark:bg-[#000000] border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.08)] text-[#86868b]"
+                : "bg-white dark:bg-[#1c1c1e] border-[rgba(0,0,0,0.06)] dark:border-[rgba(255,255,255,0.08)] text-[#86868b]"
             }`}
           >
             <span>{autoNext ? "Автоматты түрде" : "Қолмен басқару"}</span>
